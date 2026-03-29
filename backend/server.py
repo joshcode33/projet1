@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Query
+from fastapi import FastAPI, APIRouter, Query, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -272,7 +272,7 @@ async def get_vehicle(vehicle_id: str):
     for vehicle in DEMO_VEHICLES:
         if vehicle["id"] == vehicle_id:
             return vehicle
-    return {"error": "Véhicule non trouvé"}
+    raise HTTPException(status_code=404, detail="Véhicule non trouvé")
 
 @api_router.get("/locations")
 async def get_locations():
