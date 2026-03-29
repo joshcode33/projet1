@@ -1,4 +1,6 @@
 from fastapi import FastAPI, APIRouter, Query, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -12,6 +14,9 @@ from datetime import datetime, timezone
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Static site directory
+STATIC_DIR = Path("/app/static-site")
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -292,8 +297,46 @@ async def get_stats():
         "vendus": vendus
     }
 
+# Serve static HTML site
+@api_router.get("/site", response_class=HTMLResponse)
+@api_router.get("/site/", response_class=HTMLResponse)
+@api_router.get("/site/index.html", response_class=HTMLResponse)
+async def serve_index():
+    """Servir la page d'accueil HTML statique"""
+    file_path = STATIC_DIR / "index.html"
+    if file_path.exists():
+        return FileResponse(file_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Page non trouvée")
+
+@api_router.get("/site/detail.html", response_class=HTMLResponse)
+async def serve_detail():
+    """Servir la page détail HTML statique"""
+    file_path = STATIC_DIR / "detail.html"
+    if file_path.exists():
+        return FileResponse(file_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Page non trouvée")
+
+@api_router.get("/site/style.css")
+async def serve_css():
+    """Servir le fichier CSS"""
+    file_path = STATIC_DIR / "style.css"
+    if file_path.exists():
+        return FileResponse(file_path, media_type="text/css")
+    raise HTTPException(status_code=404, detail="Fichier non trouvé")
+
+@api_router.get("/site/script.js")
+async def serve_js():
+    """Servir le fichier JavaScript"""
+    file_path = STATIC_DIR / "script.js"
+    if file_path.exists():
+        return FileResponse(file_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="Fichier non trouvé")
+
 # Include the router in the main app
 app.include_router(api_router)
+
+# Mount static site at /static-site
+app.mount("/static-site", StaticFiles(directory=STATIC_DIR, html=True), name="static-site")
 
 app.add_middleware(
     CORSMiddleware,
