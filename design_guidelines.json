@@ -1,0 +1,95 @@
+{
+  "project_name": "AutoCommission",
+  "theme": "Light",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "instructions_to_main_agent": "Implement French language UI for an automotive ecommerce MVP connecting agents and buyers via WhatsApp. Use standard Tailwind classes, strictly follow font and color guidelines. DO NOT use generic fonts for headings (use Cabinet Grotesk or Outfit). The Hero section MUST use a dark overlay over the hero image to ensure text visibility. Use Shadcn components for UI but customize them (cards with shadows and rounded corners). Ensure all interactive and key informational elements have a 'data-testid' attribute.",
+  "typography": {
+    "font_strategy": "Swiss Brutalist hybrid. High contrast between heavy headings and clean body.",
+    "heading_font": "Cabinet Grotesk",
+    "body_font": "Manrope",
+    "scales": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter leading-none",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-bold tracking-tight",
+      "h4": "text-lg sm:text-xl font-semibold",
+      "body": "text-base leading-relaxed",
+      "small_label": "text-xs font-bold uppercase tracking-[0.2em]"
+    }
+  },
+  "colors": {
+    "background_main": "bg-zinc-50",
+    "background_card": "bg-white",
+    "background_hero": "bg-zinc-950",
+    "text_primary_light": "text-zinc-950",
+    "text_secondary_light": "text-zinc-500",
+    "text_dark_mode": "text-white",
+    "primary_accent": {
+      "default": "bg-orange-500",
+      "hover": "bg-orange-600",
+      "text": "text-white"
+    },
+    "whatsapp_accent": {
+      "default": "bg-[#25D366]",
+      "hover": "bg-[#1da851]",
+      "text": "text-white"
+    },
+    "status_badges": {
+      "available": "bg-emerald-100 text-emerald-800 border-emerald-200",
+      "sold": "bg-rose-100 text-rose-800 border-rose-200"
+    },
+    "border": "border-zinc-200"
+  },
+  "spacing_and_layout": {
+    "global": "Generous spacing. Use p-8 to p-12 for main sections. Use max-w-7xl mx-auto for container.",
+    "hero": "min-h-[70vh] relative flex flex-col items-center justify-center text-center px-4. Overlay: absolute inset-0 bg-black/60 z-0. Content must be relative z-10.",
+    "hero_search_bar": "mt-8 w-full max-w-4xl backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 shadow-2xl",
+    "catalog_layout": "grid grid-cols-1 lg:grid-cols-12 gap-8 py-12",
+    "sidebar": "lg:col-span-3 flex flex-col gap-6",
+    "vehicle_grid": "lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+  },
+  "components": {
+    "header": "Crystal Glass style: sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-zinc-200 shadow-sm.",
+    "vehicle_card": "bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] border border-zinc-100 overflow-hidden group flex flex-col",
+    "card_image_container": "relative aspect-[4/3] overflow-hidden bg-zinc-100",
+    "card_image": "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
+    "card_content": "p-5 flex flex-col flex-1 gap-3",
+    "buttons": "rounded-lg font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2",
+    "vehicle_detail_page": {
+      "layout": "grid grid-cols-1 lg:grid-cols-2 gap-12 py-12",
+      "gallery": "flex flex-col gap-4",
+      "main_image": "w-full aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-100 object-cover",
+      "thumbnails": "grid grid-cols-4 gap-4",
+      "info_panel": "flex flex-col gap-6"
+    }
+  },
+  "assets": {
+    "icons_library": "lucide-react",
+    "image_urls": {
+      "hero_background": {
+        "url": "https://images.pexels.com/photos/17245109/pexels-photo-17245109.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Sleek sports car with illuminated headlights in dark urban parking lot",
+        "category": "hero"
+      },
+      "catalog_vehicles": [
+        {
+          "url": "https://images.unsplash.com/photo-1758216991743-110e7a093f29?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBsdXh1cnklMjBzdXYlMjBvbiUyMHJvYWR8ZW58MHx8fHwxNzc0ODEzNzQyfDA&ixlib=rb-4.1.0&q=85",
+          "description": "White cadillac escalade driving on a highway",
+          "category": "product"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1761757414353-44a9718106f7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwzfHxtb2Rlcm4lMjBsdXh1cnklMjBzdXYlMjBvbiUyMHJvYWR8ZW58MHx8fHwxNzc0ODEzNzQyfDA&ixlib=rb-4.1.0&q=85",
+          "description": "Matte black g-wagon parked on red carpet",
+          "category": "product"
+        },
+        {
+          "url": "https://images.pexels.com/photos/33390082/pexels-photo-33390082.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "description": "Stylish black SUV parked on a quiet road by a dense forest",
+          "category": "product"
+        }
+      ]
+    }
+  },
+  "testing": {
+    "rules": "All interactive and key informational elements MUST include a 'data-testid' attribute (e.g., data-testid='whatsapp-contact-btn')."
+  }
+}
