@@ -1,0 +1,52 @@
+<!-- ============================================================================
+     pages/mode-predication.html — Mode plein écran pour prêcher
+     ============================================================================ -->
+<div class="mode-predication" data-testid="mode-predication">
+    <!-- Barre supérieure -->
+    <div class="mode-barre-sup">
+        <a id="mode-bouton-quitter" href="#" class="mode-bouton-quitter-haut"
+           data-testid="bouton-quitter-mode">
+            {{ICONE_RETOUR}} Quitter le mode prédication
+        </a>
+        <div class="mode-aide-clavier">
+            Espace = lecture/pause · + / − = taille · Échap = quitter
+        </div>
+    </div>
+
+    <!-- Zone de texte défilante -->
+    <div id="mode-contenu" class="mode-contenu" data-testid="conteneur-texte-predication">
+        <div class="mode-contenu-inner" id="mode-contenu-inner"></div>
+    </div>
+
+    <!-- Barre flottante de contrôles -->
+    <div class="mode-controles" data-testid="barre-controles-mode">
+        <button type="button" class="mode-ctrl" data-ctrl="rembobiner"
+                data-testid="ctrl-rembobiner" aria-label="Rembobiner">
+            {{ICONE_REMBOBINER}}
+        </button>
+        <button type="button" class="mode-ctrl mode-ctrl-accent" data-ctrl="lecture"
+                data-testid="ctrl-lecture" aria-label="Lecture / Pause">
+            <span id="mode-icone-lecture">{{ICONE_LECTURE}}</span>
+        </button>
+        <div class="mode-vitesse-slider">
+            <span>Vitesse</span>
+            <input type="range" min="10" max="80" step="5" value="30"
+                   data-ctrl="vitesse" data-testid="ctrl-vitesse" />
+        </div>
+        <div class="mode-separateur"></div>
+        <button type="button" class="mode-ctrl" data-ctrl="taille-moins"
+                data-testid="ctrl-taille-moins" aria-label="Diminuer">
+            {{ICONE_MOINS}}
+        </button>
+        <span class="mode-taille-info" id="mode-taille-info">56px</span>
+        <button type="button" class="mode-ctrl" data-ctrl="taille-plus"
+                data-testid="ctrl-taille-plus" aria-label="Augmenter">
+            {{ICONE_PLUS_PETIT}}
+        </button>
+        <div class="mode-separateur"></div>
+        <a id="mode-bouton-sortie" href="#" class="mode-ctrl"
+           data-testid="ctrl-quitter" aria-label="Quitter">
+            {{ICONE_QUITTER}}
+        </a>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+<!-- ============================================================================
+     partiels/point-bloc.html — Bloc d'un point principal dans l'éditeur
+     ============================================================================ -->
+<div class="point-bloc" data-testid="point-{{INDEX}}" data-index="{{INDEX}}">
+    <div class="point-bloc-entete">
+        <span class="point-bloc-numero">Point {{NUMERO}}</span>
+        <button type="button" class="btn-icone" style="width:28px;height:28px;"
+                data-action="supprimer-point" data-index="{{INDEX}}"
+                aria-label="Supprimer ce point"
+                data-testid="supprimer-point-{{INDEX}}">
+            {{ICONE_POUBELLE}}
+        </button>
+    </div>
+    <input type="text" class="champ"
+           data-role="point-titre" data-index="{{INDEX}}"
+           placeholder="Titre du point"
+           style="font-family:Fraunces,serif;font-size:16px;font-weight:600;margin-bottom:10px;"
+           data-testid="point-titre-{{INDEX}}" />
+    <textarea class="champ" rows="5"
+              data-role="point-explication" data-index="{{INDEX}}"
+              data-testid="point-explication-{{INDEX}}-textarea"></textarea>
+    <div class="actions-assistant" data-role="assistants-point" data-index="{{INDEX}}"></div>
+</div>

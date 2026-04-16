@@ -1,40 +1,28 @@
 /* ============================================================================
-   en-tete.js — Rend le bandeau supérieur (logo + actions + thème)
+   en-tete.js — Rend le bandeau supérieur en chargeant un template HTML
    ============================================================================ */
 
 async function rendreEnTete() {
     const conteneur = document.getElementById("en-tete");
+    conteneur.className = "en-tete";
+
     const utilisateur = await MS.auth.utilisateurCourant();
     const theme = MS.themeActuel();
     const iconeTheme = theme === "sombre" ? MS.icone("soleil") : MS.icone("lune");
 
-    conteneur.className = "en-tete";
-    conteneur.innerHTML = `
-        <div class="en-tete-conteneur">
-            <a href="#${utilisateur ? '/tableau-de-bord' : '/'}" class="logo" data-testid="lien-logo">
-                <span class="logo-icone">${MS.icone("livre", "icone")}</span>
-                <span class="logo-texte">MySermon <span class="logo-ai">AI</span></span>
-            </a>
-            <div class="en-tete-actions">
-                ${utilisateur ? `
-                    <a href="#/creer-predication" class="btn btn-ambre cache-mobile" data-testid="bouton-nouvelle-predication">
-                        ${MS.icone("plus", "icone-petit")}
-                        <span>Nouvelle prédication</span>
-                    </a>
-                ` : ""}
-                <button type="button" class="btn-icone" data-action="basculer-theme" aria-label="Basculer le thème" data-testid="bouton-basculer-theme">
-                    <span data-role="icone-theme">${iconeTheme}</span>
-                </button>
-                ${utilisateur ? `
-                    <button type="button" class="btn-icone btn-icone-danger" data-action="deconnexion" aria-label="Se déconnecter" data-testid="bouton-deconnexion">
-                        ${MS.icone("deconnexion", "icone")}
-                    </button>
-                ` : ""}
-            </div>
-        </div>
-    `;
+    const fichier = utilisateur
+        ? "/partiels/en-tete-prive.html"
+        : "/partiels/en-tete-public.html";
 
-    // Attacher les gestionnaires d'événements
+    const html = await MS.chargerHTML(fichier, {
+        ICONE_LIVRE: MS.icone("livre"),
+        ICONE_THEME: iconeTheme,
+        ICONE_PLUS_PETIT: MS.icone("plus", "icone-petit"),
+        ICONE_DECONNEXION: MS.icone("deconnexion"),
+    });
+    conteneur.innerHTML = html;
+
+    // Évènements
     conteneur.querySelector("[data-action='basculer-theme']")?.addEventListener("click", () => {
         MS.basculerTheme();
     });

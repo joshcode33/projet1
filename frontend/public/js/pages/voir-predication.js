@@ -1,5 +1,5 @@
 /* ============================================================================
-   pages/voir-predication.js — Consultation + actions export/partage
+   pages/voir-predication.js — Affichage d'une prédication en lecture
    ============================================================================ */
 
 async function pageVoirPredication(id) {
@@ -10,64 +10,54 @@ async function pageVoirPredication(id) {
     let p;
     try {
         p = await MS.db.obtenirPredication(id);
-    } catch (err) {
+    } catch {
         MS.afficherToast("Prédication introuvable.", "erreur");
         window.location.hash = "#/tableau-de-bord";
         return;
     }
 
-    contenu.innerHTML = `
-        <article class="vue-predication" data-testid="contenu-predication">
-            <a href="#/tableau-de-bord" class="lien-retour" data-testid="bouton-retour-tableau">
-                ${MS.icone("fleche_gauche", "icone-petit")} Retour au tableau de bord
-            </a>
-            ${p.theme ? `<p class="vue-theme" style="margin-top:16px;">${MS.echapperHTML(p.theme)}</p>` : ""}
-            <h1 class="vue-titre">${MS.echapperHTML(p.titre || "Sans titre")}</h1>
-            ${p.verset_principal ? `<p class="vue-verset">« ${MS.echapperHTML(p.verset_principal)} »</p>` : ""}
-            ${p.objectif ? `<p class="vue-objectif"><strong>Objectif :</strong> ${MS.echapperHTML(p.objectif)}</p>` : ""}
+    // 1. Charger la structure HTML de la page
+    contenu.innerHTML = await MS.chargerHTML("/pages/voir-predication.html", {
+        ICONE_RETOUR:        MS.icone("fleche_gauche", "icone-petit"),
+        ICONE_LECTURE:       MS.icone("lecture", "icone-petit"),
+        ICONE_CRAYON:        MS.icone("crayon", "icone-petit"),
+        ICONE_FICHIER:       MS.icone("fichier", "icone-petit"),
+        ICONE_FICHIER_TEXTE: MS.icone("fichier_texte", "icone-petit"),
+        ICONE_MESSAGE:       MS.icone("message", "icone-petit"),
+        ICONE_EMAIL:         MS.icone("email", "icone-petit"),
+        ICONE_COPIER:        MS.icone("copier", "icone-petit"),
+    });
 
-            <div class="vue-barre-actions">
-                <a href="#/mode-predication/${encodeURIComponent(p.id)}" class="btn btn-ambre btn-petit" data-testid="action-presenter">
-                    ${MS.icone("lecture", "icone-petit")} Mode prédication
-                </a>
-                <a href="#/creer-predication/${encodeURIComponent(p.id)}" class="btn btn-secondaire btn-petit" data-testid="action-editer">
-                    ${MS.icone("crayon", "icone-petit")} Modifier
-                </a>
-                <div class="vue-barre-droite">
-                    <button type="button" class="btn btn-secondaire btn-petit" data-action="pdf" data-testid="action-pdf">
-                        ${MS.icone("fichier", "icone-petit")} PDF
-                    </button>
-                    <button type="button" class="btn btn-secondaire btn-petit" data-action="word" data-testid="action-word">
-                        ${MS.icone("fichier_texte", "icone-petit")} Word
-                    </button>
-                    <button type="button" class="btn btn-secondaire btn-petit" data-action="whatsapp" data-testid="action-whatsapp">
-                        ${MS.icone("message", "icone-petit")} WhatsApp
-                    </button>
-                    <button type="button" class="btn btn-secondaire btn-petit" data-action="email" data-testid="action-email">
-                        ${MS.icone("email", "icone-petit")} E-mail
-                    </button>
-                    <button type="button" class="btn btn-secondaire btn-petit" data-action="copier" data-testid="action-copier">
-                        ${MS.icone("copier", "icone-petit")} Copier
-                    </button>
-                </div>
-            </div>
+    // 2. Remplir les parties dynamiques
+    document.getElementById("vue-titre").textContent = p.titre || "Sans titre";
+    afficherSiPresent("vue-theme", p.theme);
+    afficherSiPresent("vue-verset", p.verset_principal, `« ${p.verset_principal} »`);
+    afficherSiPresent("vue-objectif", p.objectif, `<strong>Objectif :</strong> ${MS.echapperHTML(p.objectif || "")}`, true);
 
-            ${p.introduction ? section("Introduction", p.introduction) : ""}
-            ${(p.points || []).map((pt, i) => section(`${i + 1}. ${pt.titre || ""}`, pt.explication || "", `section-point-${i}`)).join("")}
-            ${p.conclusion ? section("Conclusion", p.conclusion) : ""}
+    document.getElementById("lien-mode-predication").href = `#/mode-predication/${encodeURIComponent(p.id)}`;
+    document.getElementById("lien-editer").href = `#/creer-predication/${encodeURIComponent(p.id)}`;
 
-            ${p.notes ? `
-                <div class="vue-notes">
-                    <h3 class="vue-notes-titre">Notes personnelles</h3>
-                    <p class="vue-notes-contenu">${MS.echapperHTML(p.notes)}</p>
-                </div>
-            ` : ""}
-        </article>
-    `;
+    // 3. Sections dynamiques (intro, points, conclusion)
+    const templateSection = await MS.chargerHTML("/partiels/vue-section.html");
+    const sections = [];
+    if (p.introduction) sections.push(remplirSection(templateSection, "Introduction", p.introduction));
+    (p.points || []).forEach((pt, i) => {
+        sections.push(remplirSection(templateSection, `${i + 1}. ${pt.titre || ""}`, pt.explication || "", `section-point-${i}`));
+    });
+    if (p.conclusion) sections.push(remplirSection(templateSection, "Conclusion", p.conclusion));
+    document.getElementById("zone-sections").innerHTML = sections.join("");
 
+    // 4. Notes personnelles
+    if (p.notes) {
+        document.getElementById("zone-notes").style.display = "";
+        document.getElementById("vue-notes-contenu").textContent = p.notes;
+    }
+
+    // 5. Évènements des boutons
     document.querySelector("[data-action='pdf']").addEventListener("click", () => MS.export.exporterPDF(p));
     document.querySelector("[data-action='word']").addEventListener("click", async () => {
-        try { await MS.export.exporterWord(p); } catch (e) { MS.afficherToast("Export Word indisponible.", "erreur"); }
+        try { await MS.export.exporterWord(p); }
+        catch { MS.afficherToast("Export Word indisponible.", "erreur"); }
     });
     document.querySelector("[data-action='whatsapp']").addEventListener("click", () => MS.export.partagerWhatsApp(p));
     document.querySelector("[data-action='email']").addEventListener("click", () => MS.export.partagerEmail(p));
@@ -81,13 +71,20 @@ async function pageVoirPredication(id) {
     });
 }
 
-function section(titre, contenu, testid = "") {
-    return `
-        <section class="vue-section" ${testid ? `data-testid="${testid}"` : ""}>
-            <h2 class="vue-section-titre">${MS.echapperHTML(titre)}</h2>
-            <p class="vue-section-contenu">${MS.echapperHTML(contenu)}</p>
-        </section>
-    `;
+function afficherSiPresent(id, valeur, texteFormate = null, estHTML = false) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!valeur) { el.style.display = "none"; return; }
+    el.style.display = "";
+    if (estHTML) el.innerHTML = texteFormate;
+    else el.textContent = texteFormate || valeur;
+}
+
+function remplirSection(template, titre, contenu, testid = "") {
+    return template
+        .split("{{TITRE}}").join(MS.echapperHTML(titre))
+        .split("{{CONTENU}}").join(MS.echapperHTML(contenu))
+        .split("{{TESTID}}").join(testid);
 }
 
 window.MS = window.MS || {};

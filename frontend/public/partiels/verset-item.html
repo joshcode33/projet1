@@ -1,0 +1,15 @@
+<!-- ============================================================================
+     partiels/verset-item.html — Un verset suggéré par l'IA
+     ============================================================================ -->
+<div class="verset-item">
+    <div style="min-width:0;">
+        <p class="verset-ref">{{REFERENCE}}</p>
+        <p class="verset-texte">{{TEXTE}}</p>
+    </div>
+    <button type="button" class="btn-icone" style="width:32px;height:32px;"
+            data-action="ajouter-verset" data-idx="{{INDEX}}"
+            aria-label="Ajouter ce verset"
+            data-testid="ajouter-verset-{{INDEX}}">
+        {{ICONE_PLUS_PETIT}}
+    </button>
+</div>

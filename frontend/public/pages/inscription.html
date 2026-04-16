@@ -1,0 +1,59 @@
+<!-- ============================================================================
+     pages/inscription.html — Structure HTML de la page d'inscription
+     ============================================================================ -->
+<div class="page-auth inversee">
+    <!-- Colonne formulaire -->
+    <div class="auth-cote-formulaire">
+        <button type="button" class="btn-icone"
+                style="position:absolute;top:20px;left:20px;"
+                data-action="basculer-theme"
+                aria-label="Basculer le thème"
+                data-testid="bouton-basculer-theme-auth">
+            <span data-role="icone-theme">{{ICONE_THEME}}</span>
+        </button>
+
+        <div class="auth-formulaire-conteneur">
+            <div class="auth-logo-mobile">
+                <span class="logo-icone">{{ICONE_LIVRE_PETIT}}</span>
+                <span class="logo-texte">MySermon <span class="logo-ai">AI</span></span>
+            </div>
+
+            <h2 class="auth-titre">Créez votre compte</h2>
+            <p class="auth-description">Commencez à préparer vos prédications avec l'aide de l'IA.</p>
+
+            <form id="formulaire-inscription" class="auth-formulaire" data-testid="formulaire-inscription">
+                <div>
+                    <label class="etiquette" for="champ-nom">Nom complet</label>
+                    <input id="champ-nom" type="text" autocomplete="name"
+                           class="champ" placeholder="Pasteur Jean Dupont"
+                           data-testid="champ-nom-inscription" />
+                </div>
+                <div>
+                    <label class="etiquette" for="champ-email">Adresse e-mail</label>
+                    <input id="champ-email" type="email" required autocomplete="email"
+                           class="champ" placeholder="vous@votre-eglise.fr"
+                           data-testid="champ-email-inscription" />
+                </div>
+                <div>
+                    <label class="etiquette" for="champ-mdp">Mot de passe</label>
+                    <input id="champ-mdp" type="password" required minlength="6" autocomplete="new-password"
+                           class="champ" placeholder="Au moins 6 caractères"
+                           data-testid="champ-motdepasse-inscription" />
+                </div>
+                <button type="submit" class="btn btn-primaire" id="bouton-inscription"
+                        style="width:100%;margin-top:8px;"
+                        data-testid="bouton-soumettre-inscription">
+                    Créer mon compte
+                </button>
+            </form>
+
+            <p class="auth-pied">
+                Déjà un compte ?
+                <a href="#/connexion" data-testid="lien-connexion">Se connecter</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Colonne illustration -->
+    <div class="auth-cote-image grain" style="background-image:url('{{IMAGE_FOND}}');"></div>
+</div>

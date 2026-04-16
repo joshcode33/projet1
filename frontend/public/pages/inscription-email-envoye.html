@@ -1,0 +1,18 @@
+<!-- ============================================================================
+     pages/inscription-email-envoye.html — Écran "vérifiez votre boîte mail"
+     ============================================================================ -->
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+    <div class="auth-formulaire-conteneur" style="max-width:440px;text-align:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(74,93,35,0.12);color:var(--primaire);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            {{ICONE_COCHE}}
+        </div>
+        <h2 style="font-family:Fraunces,serif;font-size:32px;">Vérifiez votre boîte mail</h2>
+        <p style="margin-top:12px;font-size:14px;color:var(--texte-secondaire);">
+            Nous avons envoyé un lien de confirmation à <strong>{{EMAIL}}</strong>.
+            Cliquez dessus pour activer votre compte, puis connectez-vous.
+        </p>
+        <a href="#/connexion" class="btn btn-primaire" style="margin-top:24px;" data-testid="lien-retour-connexion">
+            Retour à la connexion
+        </a>
+    </div>
+</div>

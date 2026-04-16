@@ -1,0 +1,38 @@
+<!-- ============================================================================
+     pages/tableau-de-bord.html — Écran principal listant les prédications
+     ============================================================================ -->
+<div class="page-conteneur">
+    <section class="bandeau-accueil">
+        <div>
+            <p class="etiquette-section">Tableau de bord</p>
+            <h1 class="titre-principal">Bonjour, <span id="nom-utilisateur">pasteur</span>.</h1>
+            <p class="sous-titre">
+                Retrouvez vos prédications, créez-en de nouvelles, et prêchez avec sérénité.
+            </p>
+        </div>
+        <a href="#/creer-predication" class="btn btn-primaire"
+           style="align-self:flex-start;"
+           data-testid="bouton-creer-predication-principal">
+            {{ICONE_PLUS}} Nouvelle prédication
+        </a>
+    </section>
+
+    <section class="barre-outils">
+        <div class="champ-recherche-conteneur">
+            {{ICONE_RECHERCHE}}
+            <input type="search" id="champ-recherche" class="champ"
+                   placeholder="Rechercher par titre, thème ou verset…"
+                   data-testid="champ-recherche" />
+        </div>
+        <div class="champ-recherche-conteneur" style="max-width:240px;">
+            {{ICONE_FILTRE}}
+            <select id="filtre-theme" class="champ" style="padding-left:38px;" data-testid="filtre-theme">
+                <option value="tous">Tous les thèmes</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Zone remplie dynamiquement par JavaScript :
+         soit la grille de cartes, soit l'état vide, soit le message "aucun résultat" -->
+    <div id="zone-liste"></div>
+</div>

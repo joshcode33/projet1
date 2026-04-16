@@ -1,5 +1,5 @@
 /* ============================================================================
-   pages/tableau-de-bord.js — Liste des prédications + recherche/filtres
+   pages/tableau-de-bord.js — Logique de l'écran principal
    ============================================================================ */
 
 let _predicationsCache = [];
@@ -12,56 +12,28 @@ async function pageTableauDeBord() {
     const contenu = document.getElementById("contenu");
     MS.afficherChargement(contenu);
 
+    // 1. Charger les prédications depuis Supabase
     try {
         _predicationsCache = await MS.db.listerPredications(utilisateur.id);
     } catch (err) {
-        afficherErreurChargement(contenu, err);
+        await afficherErreurChargement(contenu, err);
         return;
     }
 
-    dessinerTableau();
-}
+    // 2. Charger le template HTML principal
+    contenu.innerHTML = await MS.chargerHTML("/pages/tableau-de-bord.html", {
+        ICONE_PLUS: MS.icone("plus", "icone-petit"),
+        ICONE_RECHERCHE: MS.icone("recherche", "icone-petit"),
+        ICONE_FILTRE: MS.icone("filtre", "icone-petit"),
+    });
 
-function dessinerTableau() {
-    const contenu = document.getElementById("contenu");
-    const themes = Array.from(new Set(_predicationsCache.map(p => (p.theme || "").trim()).filter(Boolean)));
+    // 3. Remplir les parties dynamiques
+    document.getElementById("nom-utilisateur").textContent = extraireNomUtilisateur();
+    document.getElementById("champ-recherche").value = _filtreRecherche;
+    remplirOptionsThemes();
 
-    const nom = extraireNomUtilisateur();
-    const optionsThemes = `<option value="tous">Tous les thèmes</option>` +
-        themes.map(t => `<option value="${MS.echapperHTML(t)}" ${_filtreTheme === t ? "selected" : ""}>${MS.echapperHTML(t)}</option>`).join("");
-
-    contenu.innerHTML = `
-        <div class="page-conteneur">
-            <section class="bandeau-accueil">
-                <div>
-                    <p class="etiquette-section">Tableau de bord</p>
-                    <h1 class="titre-principal">Bonjour, ${MS.echapperHTML(nom)}.</h1>
-                    <p class="sous-titre">Retrouvez vos prédications, créez-en de nouvelles, et prêchez avec sérénité.</p>
-                </div>
-                <a href="#/creer-predication" class="btn btn-primaire" style="align-self:flex-start;" data-testid="bouton-creer-predication-principal">
-                    ${MS.icone("plus", "icone-petit")} Nouvelle prédication
-                </a>
-            </section>
-
-            <section class="barre-outils">
-                <div class="champ-recherche-conteneur">
-                    ${MS.icone("recherche", "icone-petit")}
-                    <input type="search" id="recherche" class="champ" placeholder="Rechercher par titre, thème ou verset…"
-                           value="${MS.echapperHTML(_filtreRecherche)}" data-testid="champ-recherche" />
-                </div>
-                <div class="champ-recherche-conteneur" style="max-width:240px;">
-                    ${MS.icone("filtre", "icone-petit")}
-                    <select id="filtre-theme" class="champ" style="padding-left:38px;" data-testid="filtre-theme">
-                        ${optionsThemes}
-                    </select>
-                </div>
-            </section>
-
-            <div id="zone-liste"></div>
-        </div>
-    `;
-
-    document.getElementById("recherche").addEventListener("input", (e) => {
+    // 4. Évènements
+    document.getElementById("champ-recherche").addEventListener("input", (e) => {
         _filtreRecherche = e.target.value;
         dessinerListe();
     });
@@ -70,10 +42,18 @@ function dessinerTableau() {
         dessinerListe();
     });
 
-    dessinerListe();
+    // 5. Affichage de la liste
+    await dessinerListe();
 }
 
-function dessinerListe() {
+function remplirOptionsThemes() {
+    const select = document.getElementById("filtre-theme");
+    const themes = Array.from(new Set(_predicationsCache.map(p => (p.theme || "").trim()).filter(Boolean)));
+    select.innerHTML = `<option value="tous">Tous les thèmes</option>` +
+        themes.map(t => `<option value="${MS.echapperHTML(t)}" ${_filtreTheme === t ? "selected" : ""}>${MS.echapperHTML(t)}</option>`).join("");
+}
+
+async function dessinerListe() {
     const zone = document.getElementById("zone-liste");
     const resultats = _predicationsCache.filter(p => {
         const r = _filtreRecherche.toLowerCase();
@@ -85,21 +65,27 @@ function dessinerListe() {
         return matchRecherche && matchTheme;
     });
 
+    // Aucune prédication
     if (_predicationsCache.length === 0) {
-        zone.innerHTML = rendreEtatVide();
+        zone.innerHTML = await MS.chargerHTML("/partiels/etat-vide.html", {
+            ICONE_ETINCELLE_GROS: MS.icone("etincelle", "icone-gros"),
+            ICONE_FICHIER: MS.icone("fichier", "icone-petit"),
+        });
         return;
     }
+
+    // Aucun résultat pour les filtres
     if (resultats.length === 0) {
         zone.innerHTML = `<p data-testid="message-aucun-resultat" style="text-align:center;color:var(--texte-secondaire);padding:48px 0;">Aucun résultat pour ces filtres.</p>`;
         return;
     }
 
-    zone.innerHTML = `
-        <div class="grille-predications" data-testid="liste-predications">
-            ${resultats.map(rendreCartePrediction).join("")}
-        </div>
-    `;
+    // Grille de cartes
+    const templateCarte = await MS.chargerHTML("/partiels/carte-predication.html");
+    const cartes = resultats.map(p => remplirCarte(templateCarte, p)).join("");
+    zone.innerHTML = `<div class="grille-predications" data-testid="liste-predications">${cartes}</div>`;
 
+    // Évènements de suppression
     zone.querySelectorAll("[data-action='supprimer']").forEach(btn => {
         btn.addEventListener("click", async (e) => {
             e.preventDefault();
@@ -110,7 +96,8 @@ function dessinerListe() {
                 await MS.db.supprimerPredication(id);
                 _predicationsCache = _predicationsCache.filter(p => p.id !== id);
                 MS.afficherToast("Prédication supprimée.", "succes");
-                dessinerTableau();
+                remplirOptionsThemes();
+                await dessinerListe();
             } catch (err) {
                 MS.afficherToast(err.message || "Échec de la suppression.", "erreur");
             }
@@ -118,50 +105,30 @@ function dessinerListe() {
     });
 }
 
-function rendreCartePrediction(p) {
+function remplirCarte(template, p) {
     const resume = (p.introduction || p.notes || "").slice(0, 120);
-    return `
-        <article class="carte carte-predication" data-testid="carte-predication-${p.id}">
-            <div class="carte-entete">
-                <div class="carte-date">${MS.icone("calendrier", "icone-petit")} ${MS.formaterDate(p.created_at)}</div>
-                ${p.theme ? `<span class="carte-theme">${MS.echapperHTML(p.theme)}</span>` : ""}
-            </div>
-            <a href="#/predication/${encodeURIComponent(p.id)}" style="display:block;" data-testid="lien-predication-${p.id}">
-                <h3 class="carte-titre">${MS.echapperHTML(p.titre || "Sans titre")}</h3>
-                ${p.verset_principal ? `<p class="carte-verset">${MS.echapperHTML(p.verset_principal)}</p>` : ""}
-                ${resume ? `<p class="carte-resume">${MS.echapperHTML(resume)}${resume.length >= 120 ? "…" : ""}</p>` : ""}
-            </a>
-            <div class="carte-actions">
-                <div class="carte-actions-gauche">
-                    <a href="#/predication/${encodeURIComponent(p.id)}" class="carte-action-lien" data-testid="action-editer-${p.id}">
-                        ${MS.icone("fichier", "icone-petit")} Modifier
-                    </a>
-                    <a href="#/mode-predication/${encodeURIComponent(p.id)}" class="carte-action-lien carte-action-ambre" style="color:var(--accent);" data-testid="action-presenter-${p.id}">
-                        ${MS.icone("lecture", "icone-petit")} Prêcher
-                    </a>
-                </div>
-                <button type="button" class="btn-icone" style="width:32px;height:32px;" data-action="supprimer" data-id="${p.id}" aria-label="Supprimer" data-testid="action-supprimer-${p.id}">
-                    ${MS.icone("poubelle", "icone-petit")}
-                </button>
-            </div>
-        </article>
-    `;
+    const themeAffiche = p.theme ? "" : "display:none;";
+    const versetAffiche = p.verset_principal ? "" : "display:none;";
+    const resumeAffiche = resume ? "" : "display:none;";
+
+    return template
+        .split("{{ID}}").join(MS.echapperHTML(p.id))
+        .split("{{ID_ENCODE}}").join(encodeURIComponent(p.id))
+        .split("{{DATE}}").join(MS.echapperHTML(MS.formaterDate(p.created_at)))
+        .split("{{ICONE_CALENDRIER}}").join(MS.icone("calendrier", "icone-petit"))
+        .split("{{ICONE_FICHIER}}").join(MS.icone("fichier", "icone-petit"))
+        .split("{{ICONE_LECTURE}}").join(MS.icone("lecture", "icone-petit"))
+        .split("{{ICONE_POUBELLE}}").join(MS.icone("poubelle", "icone-petit"))
+        .split("{{TITRE}}").join(MS.echapperHTML(p.titre || "Sans titre"))
+        .split("{{THEME}}").join(MS.echapperHTML(p.theme || ""))
+        .split("{{STYLE_THEME}}").join(themeAffiche)
+        .split("{{VERSET}}").join(MS.echapperHTML(p.verset_principal || ""))
+        .split("{{STYLE_VERSET}}").join(versetAffiche)
+        .split("{{RESUME}}").join(MS.echapperHTML(resume + (resume.length >= 120 ? "…" : "")))
+        .split("{{STYLE_RESUME}}").join(resumeAffiche);
 }
 
-function rendreEtatVide() {
-    return `
-        <div class="carte etat-vide" data-testid="etat-vide-tableau">
-            <div class="etat-vide-icone">${MS.icone("etincelle", "icone-gros")}</div>
-            <h3 class="etat-vide-titre">Votre première prédication vous attend</h3>
-            <p class="etat-vide-texte">Démarrez avec un titre, un thème, un verset — et laissez l'IA vous proposer une structure complète que vous pourrez peaufiner.</p>
-            <a href="#/creer-predication" class="btn btn-primaire" style="margin-top:24px;" data-testid="bouton-creer-premiere-predication">
-                ${MS.icone("fichier", "icone-petit")} Créer ma première prédication
-            </a>
-        </div>
-    `;
-}
-
-function afficherErreurChargement(contenu, err) {
+async function afficherErreurChargement(contenu, err) {
     contenu.innerHTML = `
         <div class="page-conteneur">
             <div class="message-erreur" data-testid="message-erreur-tableau">
@@ -169,7 +136,7 @@ function afficherErreurChargement(contenu, err) {
                 <p>${MS.echapperHTML(err.message || "Erreur inconnue.")}</p>
                 <p class="message-erreur-detail">
                     Cette erreur survient si la table <code>predications</code> n'a pas encore été créée dans Supabase.
-                    Exécutez le script <code>/app/supabase_schema.sql</code> dans votre console Supabase → SQL Editor pour la créer.
+                    Exécutez le script <code>/app/supabase_schema.sql</code> dans votre console Supabase → SQL Editor.
                 </p>
             </div>
         </div>

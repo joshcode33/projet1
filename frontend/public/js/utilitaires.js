@@ -3,10 +3,23 @@
    ============================================================================ */
 
 /**
- * Affiche une notification temporaire en haut à droite
- * @param {string} message - Texte du message
- * @param {'succes'|'erreur'|'info'} type - Type de notification
+ * Charge un fichier HTML depuis le serveur et remplace les {{placeholders}}
+ * par les valeurs fournies.
+ * @param {string} chemin  Chemin relatif depuis la racine (ex : "/pages/connexion.html")
+ * @param {Object} variables  Dictionnaire {NOM: "valeur"} pour les {{NOM}}
+ * @returns {Promise<string>} HTML traité
  */
+async function chargerHTML(chemin, variables = {}) {
+    const reponse = await fetch(chemin, { cache: "no-store" });
+    if (!reponse.ok) throw new Error(`Impossible de charger ${chemin}`);
+    let html = await reponse.text();
+    Object.entries(variables).forEach(([cle, valeur]) => {
+        html = html.split(`{{${cle}}}`).join(valeur ?? "");
+    });
+    return html;
+}
+
+/** Affiche une notification temporaire en haut à droite */
 function afficherToast(message, type = "info") {
     const zone = document.getElementById("zone-toasts");
     if (!zone) return;
@@ -15,25 +28,22 @@ function afficherToast(message, type = "info") {
     toast.className = `toast toast-${type}`;
     toast.setAttribute("data-testid", `toast-${type}`);
 
-    const icone = {
-        succes: '<svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-        erreur: '<svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-        info: '<svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    const icones = {
+        succes: icone("coche"),
+        erreur: icone("quitter"),
+        info: icone("etincelle"),
     };
-
-    toast.innerHTML = `${icone[type] || icone.info}<span>${echapperHTML(message)}</span>`;
+    toast.innerHTML = `${icones[type] || icones.info}<span></span>`;
+    toast.querySelector("span").textContent = message;
     zone.appendChild(toast);
 
-    // Auto-disparition après 4 secondes
     setTimeout(() => {
         toast.classList.add("toast-sort");
         setTimeout(() => toast.remove(), 300);
     }, 4000);
 }
 
-/**
- * Échappe les caractères HTML dangereux pour éviter les injections XSS
- */
+/** Échappe les caractères HTML pour éviter les injections XSS */
 function echapperHTML(texte) {
     if (texte === null || texte === undefined) return "";
     const div = document.createElement("div");
@@ -41,9 +51,7 @@ function echapperHTML(texte) {
     return div.innerHTML;
 }
 
-/**
- * Formate une date ISO en français (ex : "16 février 2026")
- */
+/** Formate une date ISO en français ("16 février 2026") */
 function formaterDate(iso) {
     if (!iso) return "";
     try {
@@ -57,9 +65,7 @@ function formaterDate(iso) {
     }
 }
 
-/**
- * Affiche un écran de chargement dans le conteneur donné
- */
+/** Affiche un écran de chargement dans le conteneur donné */
 function afficherChargement(conteneur) {
     conteneur.innerHTML = `
         <div class="ecran-chargement" data-testid="ecran-chargement">
@@ -71,9 +77,7 @@ function afficherChargement(conteneur) {
     `;
 }
 
-/**
- * Renvoie un SVG en chaîne selon un nom (style Lucide icons, trait 2.2)
- */
+/** Renvoie un SVG sous forme de chaîne selon un nom */
 function icone(nom, classe = "icone") {
     const bibliotheque = {
         livre: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
@@ -106,12 +110,12 @@ function icone(nom, classe = "icone") {
     return `<svg class="${classe}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${bibliotheque[nom] || ""}</svg>`;
 }
 
-/** Raccourci pour sélectionner un élément */
-function $(selecteur, racine = document) { return racine.querySelector(selecteur); }
-function $$(selecteur, racine = document) { return Array.from(racine.querySelectorAll(selecteur)); }
+/** Raccourcis de sélection */
+function $(s, r = document) { return r.querySelector(s); }
+function $$(s, r = document) { return Array.from(r.querySelectorAll(s)); }
 
-/** Expose les helpers globalement */
 window.MS = window.MS || {};
 Object.assign(window.MS, {
-    afficherToast, echapperHTML, formaterDate, afficherChargement, icone, $, $$,
+    chargerHTML, afficherToast, echapperHTML, formaterDate,
+    afficherChargement, icone, $, $$,
 });

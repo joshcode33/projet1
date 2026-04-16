@@ -1,0 +1,71 @@
+<!-- ============================================================================
+     pages/connexion.html — Structure HTML de la page de connexion
+     Placeholders remplacés par JavaScript : {{IMAGE_FOND}}, {{ICONE_THEME}}
+     ============================================================================ -->
+<div class="page-auth">
+    <!-- Colonne illustration (cachée sur mobile) -->
+    <div class="auth-cote-image grain" style="background-image:url('{{IMAGE_FOND}}');">
+        <div class="auth-cote-image-contenu">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);">
+                    {{ICONE_LIVRE}}
+                </span>
+                <span style="font-family:Fraunces,serif;font-weight:600;font-size:20px;">
+                    MySermon <span style="color:#D99B4B;">AI</span>
+                </span>
+            </div>
+            <div>
+                <h1 class="auth-cote-image-titre">Préparez des prédications qui touchent les cœurs — en quelques minutes.</h1>
+                <p class="auth-cote-image-sous-titre">
+                    Un assistant pastoral discret, fidèle à l'Écriture, conçu pour les serviteurs qui n'ont jamais assez de temps.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Colonne formulaire -->
+    <div class="auth-cote-formulaire">
+        <button type="button" class="btn-icone auth-bouton-theme"
+                data-action="basculer-theme"
+                aria-label="Basculer le thème"
+                data-testid="bouton-basculer-theme-auth">
+            <span data-role="icone-theme">{{ICONE_THEME}}</span>
+        </button>
+
+        <div class="auth-formulaire-conteneur">
+            <!-- Logo affiché uniquement sur mobile -->
+            <div class="auth-logo-mobile">
+                <span class="logo-icone">{{ICONE_LIVRE_PETIT}}</span>
+                <span class="logo-texte">MySermon <span class="logo-ai">AI</span></span>
+            </div>
+
+            <h2 class="auth-titre">Bon retour, pasteur.</h2>
+            <p class="auth-description">Connectez-vous pour retrouver vos prédications.</p>
+
+            <form id="formulaire-connexion" class="auth-formulaire" data-testid="formulaire-connexion">
+                <div>
+                    <label class="etiquette" for="champ-email">Adresse e-mail</label>
+                    <input id="champ-email" name="email" type="email" required autocomplete="email"
+                           class="champ" placeholder="vous@votre-eglise.fr"
+                           data-testid="champ-email-connexion" />
+                </div>
+                <div>
+                    <label class="etiquette" for="champ-mdp">Mot de passe</label>
+                    <input id="champ-mdp" name="motDePasse" type="password" required autocomplete="current-password"
+                           class="champ" placeholder="Votre mot de passe"
+                           data-testid="champ-motdepasse-connexion" />
+                </div>
+                <button type="submit" class="btn btn-primaire" id="bouton-connexion"
+                        style="width:100%;margin-top:8px;"
+                        data-testid="bouton-soumettre-connexion">
+                    Se connecter
+                </button>
+            </form>
+
+            <p class="auth-pied">
+                Pas encore de compte ?
+                <a href="#/inscription" data-testid="lien-inscription">Créer un compte</a>
+            </p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<!-- ============================================================================
+     partiels/en-tete-prive.html — Bandeau pour les pages authentifiées
+     ============================================================================ -->
+<div class="en-tete-conteneur">
+    <a href="#/tableau-de-bord" class="logo" data-testid="lien-logo">
+        <span class="logo-icone">{{ICONE_LIVRE}}</span>
+        <span class="logo-texte">MySermon <span class="logo-ai">AI</span></span>
+    </a>
+    <div class="en-tete-actions">
+        <a href="#/creer-predication" class="btn btn-ambre cache-mobile"
+           data-testid="bouton-nouvelle-predication">
+            {{ICONE_PLUS_PETIT}}
+            <span>Nouvelle prédication</span>
+        </a>
+        <button type="button" class="btn-icone" data-action="basculer-theme"
+                aria-label="Basculer le thème"
+                data-testid="bouton-basculer-theme">
+            <span data-role="icone-theme">{{ICONE_THEME}}</span>
+        </button>
+        <button type="button" class="btn-icone btn-icone-danger" data-action="deconnexion"
+                aria-label="Se déconnecter"
+                data-testid="bouton-deconnexion">
+            {{ICONE_DECONNEXION}}
+        </button>
+    </div>
+</div>

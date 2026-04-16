@@ -1,0 +1,48 @@
+<!-- ============================================================================
+     pages/voir-predication.html — Vue lecture d'une prédication
+     Tous les contenus dynamiques sont injectés par JavaScript via
+     leur identifiant (id="…").
+     ============================================================================ -->
+<article class="vue-predication" data-testid="contenu-predication">
+    <a href="#/tableau-de-bord" class="lien-retour" data-testid="bouton-retour-tableau">
+        {{ICONE_RETOUR}} Retour au tableau de bord
+    </a>
+
+    <p class="vue-theme" id="vue-theme" style="margin-top:16px;display:none;"></p>
+    <h1 class="vue-titre" id="vue-titre"></h1>
+    <p class="vue-verset" id="vue-verset" style="display:none;"></p>
+    <p class="vue-objectif" id="vue-objectif" style="display:none;"></p>
+
+    <!-- Barre d'actions : export / partage / modification -->
+    <div class="vue-barre-actions">
+        <a id="lien-mode-predication" href="#" class="btn btn-ambre btn-petit"
+           data-testid="action-presenter">
+            {{ICONE_LECTURE}} Mode prédication
+        </a>
+        <a id="lien-editer" href="#" class="btn btn-secondaire btn-petit"
+           data-testid="action-editer">
+            {{ICONE_CRAYON}} Modifier
+        </a>
+        <div class="vue-barre-droite">
+            <button type="button" class="btn btn-secondaire btn-petit" data-action="pdf"
+                    data-testid="action-pdf">{{ICONE_FICHIER}} PDF</button>
+            <button type="button" class="btn btn-secondaire btn-petit" data-action="word"
+                    data-testid="action-word">{{ICONE_FICHIER_TEXTE}} Word</button>
+            <button type="button" class="btn btn-secondaire btn-petit" data-action="whatsapp"
+                    data-testid="action-whatsapp">{{ICONE_MESSAGE}} WhatsApp</button>
+            <button type="button" class="btn btn-secondaire btn-petit" data-action="email"
+                    data-testid="action-email">{{ICONE_EMAIL}} E-mail</button>
+            <button type="button" class="btn btn-secondaire btn-petit" data-action="copier"
+                    data-testid="action-copier">{{ICONE_COPIER}} Copier</button>
+        </div>
+    </div>
+
+    <!-- Sections de la prédication : introduction / points / conclusion -->
+    <div id="zone-sections"></div>
+
+    <!-- Notes personnelles (optionnelles) -->
+    <div id="zone-notes" style="display:none;" class="vue-notes">
+        <h3 class="vue-notes-titre">Notes personnelles</h3>
+        <p class="vue-notes-contenu" id="vue-notes-contenu"></p>
+    </div>
+</article>

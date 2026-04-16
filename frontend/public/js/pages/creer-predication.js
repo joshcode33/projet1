@@ -1,14 +1,25 @@
 /* ============================================================================
-   pages/creer-predication.js — Formulaire de création/édition + IA
+   pages/creer-predication.js — Logique du formulaire de création / édition
    ============================================================================ */
 
 let _predicationCourante = null;
 let _enregistrementEnCours = false;
+let _templateBoutonAssistant = "";
+let _templatePointBloc = "";
+let _templateVersetItem = "";
+
+const ACTIONS_IA = [
+    { cle: "reformuler", libelle: "Reformuler" },
+    { cle: "corriger",   libelle: "Corriger" },
+    { cle: "developper", libelle: "Développer" },
+    { cle: "illustrer",  libelle: "Illustrer" },
+];
 
 async function pageCreerPredication(id = null) {
     await MS.rendreEnTete();
     const contenu = document.getElementById("contenu");
 
+    // Mode édition : charger la prédication
     if (id) {
         MS.afficherChargement(contenu);
         try {
@@ -26,240 +37,104 @@ async function pageCreerPredication(id = null) {
         };
     }
 
-    dessinerEditeur(Boolean(id));
+    // Précharge des partiels réutilisés
+    _templateBoutonAssistant = await MS.chargerHTML("/partiels/bouton-assistant.html");
+    _templatePointBloc       = await MS.chargerHTML("/partiels/point-bloc.html");
+    _templateVersetItem      = await MS.chargerHTML("/partiels/verset-item.html");
+
+    // Charge la structure HTML de la page
+    contenu.innerHTML = await MS.chargerHTML("/pages/creer-predication.html", {
+        ICONE_RETOUR:       MS.icone("fleche_gauche", "icone-petit"),
+        ICONE_ETINCELLE:    MS.icone("etincelle", "icone-petit"),
+        ICONE_SIGNET:       MS.icone("signet", "icone-petit"),
+        ICONE_PLUS_PETIT:   MS.icone("plus", "icone-petit"),
+        ICONE_ENREGISTRER:  MS.icone("enregistrer", "icone-petit"),
+    });
+
+    remplirChamps(Boolean(id));
+    attacherAssistants("introduction");
+    attacherAssistants("conclusion");
+    dessinerPoints();
+    attacherEvenementsGeneraux(Boolean(id));
 }
 
-function dessinerEditeur(enEdition) {
-    const contenu = document.getElementById("contenu");
+function remplirChamps(enEdition) {
     const p = _predicationCourante;
+    document.getElementById("titre-page").textContent = enEdition ? "Modifier la prédication" : "Nouvelle prédication";
+    document.getElementById("f-titre").value        = p.titre || "";
+    document.getElementById("f-theme").value        = p.theme || "";
+    document.getElementById("f-verset").value       = p.verset_principal || "";
+    document.getElementById("f-objectif").value     = p.objectif || "";
+    document.getElementById("f-notes").value        = p.notes || "";
+    document.getElementById("f-introduction").value = p.introduction || "";
+    document.getElementById("f-conclusion").value   = p.conclusion || "";
 
-    contenu.innerHTML = `
-        <div class="page-editeur">
-            <a href="#/tableau-de-bord" class="lien-retour" data-testid="bouton-retour-tableau">
-                ${MS.icone("fleche_gauche", "icone-petit")} Retour au tableau de bord
+    // Bouton secondaire selon mode création/édition
+    const zone = document.getElementById("zone-bouton-secondaire");
+    if (enEdition) {
+        zone.innerHTML = `
+            <a href="#/mode-predication/${encodeURIComponent(p.id)}" class="btn btn-secondaire" data-testid="bouton-mode-predication">
+                ${MS.icone("lecture", "icone-petit")} Mode prédication
             </a>
-            <h1 class="titre-principal" style="margin-top:16px;">${enEdition ? "Modifier la prédication" : "Nouvelle prédication"}</h1>
-            <p class="sous-titre">Renseignez l'essentiel puis laissez l'IA structurer le message — vous garderez la plume.</p>
-
-            <section class="carte section-formulaire">
-                <h2 class="section-titre">1. Votre brief</h2>
-                <div class="groupe-champs-deux">
-                    <div>
-                        <label class="etiquette" for="f-titre">Titre *</label>
-                        <input id="f-titre" type="text" class="champ" placeholder="Ex : La grâce qui relève"
-                               value="${MS.echapperHTML(p.titre)}" data-testid="champ-titre" />
-                    </div>
-                    <div>
-                        <label class="etiquette" for="f-theme">Thème</label>
-                        <input id="f-theme" type="text" class="champ" placeholder="Ex : Espérance, Grâce, Famille…"
-                               value="${MS.echapperHTML(p.theme)}" data-testid="champ-theme" />
-                    </div>
-                    <div>
-                        <label class="etiquette" for="f-verset">Verset biblique principal</label>
-                        <input id="f-verset" type="text" class="champ" placeholder="Ex : Romains 8:28"
-                               value="${MS.echapperHTML(p.verset_principal)}" data-testid="champ-verset" />
-                    </div>
-                    <div>
-                        <label class="etiquette" for="f-objectif">Objectif pastoral</label>
-                        <input id="f-objectif" type="text" class="champ" placeholder="Ce que l'auditoire doit retenir / faire"
-                               value="${MS.echapperHTML(p.objectif)}" data-testid="champ-objectif" />
-                    </div>
-                </div>
-                <div style="margin-top:16px;">
-                    <label class="etiquette" for="f-notes">Notes, idées, anecdotes</label>
-                    <textarea id="f-notes" class="champ" rows="4" placeholder="Tout ce qui traverse votre esprit…"
-                              data-testid="champ-notes">${MS.echapperHTML(p.notes)}</textarea>
-                </div>
-
-                <div class="barre-actions-ia">
-                    <button type="button" class="btn btn-ambre" id="btn-generer" data-testid="bouton-generer-predication">
-                        ${MS.icone("etincelle", "icone-petit")} Générer la prédication
-                    </button>
-                    <button type="button" class="btn btn-secondaire" id="btn-versets" data-testid="bouton-suggerer-versets">
-                        ${MS.icone("signet", "icone-petit")} Suggérer des versets
-                    </button>
-                </div>
-
-                <div id="zone-versets"></div>
-            </section>
-
-            <section class="carte section-formulaire">
-                <h2 class="section-titre">2. Corps de la prédication</h2>
-
-                ${blocChampAvecAssistant("Introduction", "introduction", p.introduction, 5)}
-
-                <div style="margin-top:24px;display:flex;justify-content:space-between;align-items:center;">
-                    <h3 style="font-family:Fraunces,serif;font-size:16px;font-weight:600;">Points principaux</h3>
-                    <button type="button" class="btn btn-secondaire btn-petit" id="btn-ajouter-point" data-testid="bouton-ajouter-point">
-                        ${MS.icone("plus", "icone-petit")} Ajouter un point
-                    </button>
-                </div>
-
-                <div id="zone-points" style="margin-top:12px;">${rendrePoints()}</div>
-
-                ${blocChampAvecAssistant("Conclusion", "conclusion", p.conclusion, 4)}
-            </section>
-
-            <div class="barre-actions-sauvegarde">
-                <button type="button" class="btn btn-primaire" id="btn-sauvegarder" data-testid="bouton-sauvegarder">
-                    ${MS.icone("enregistrer", "icone-petit")} Enregistrer
-                </button>
-                ${enEdition ? `
-                    <a href="#/mode-predication/${encodeURIComponent(p.id)}" class="btn btn-secondaire" data-testid="bouton-mode-predication">
-                        ${MS.icone("lecture", "icone-petit")} Mode prédication
-                    </a>
-                ` : `
-                    <button type="button" class="btn btn-secondaire" id="btn-sauvegarder-presenter" data-testid="bouton-sauvegarder-et-presenter">
-                        ${MS.icone("lecture", "icone-petit")} Enregistrer & prêcher
-                    </button>
-                `}
-            </div>
-        </div>
-    `;
-
-    attacherEvenementsEditeur(enEdition);
-}
-
-function blocChampAvecAssistant(titre, cle, valeur, rows) {
-    return `
-        <div style="margin-top:${titre ? 20 : 8}px;">
-            ${titre ? `<label class="etiquette">${titre}</label>` : ""}
-            <textarea id="f-${cle}" class="champ" rows="${rows}" data-testid="${cle}-textarea">${MS.echapperHTML(valeur || "")}</textarea>
-            <div class="actions-assistant">
-                ${["reformuler", "corriger", "developper", "illustrer"].map(a => `
-                    <button type="button" class="btn-assistant" data-action="assistant" data-cle="${cle}" data-action-ia="${a}" data-testid="${cle}-assistant-${a}">
-                        ${MS.icone("baguette", "icone-petit")} ${a.charAt(0).toUpperCase() + a.slice(1)}
-                    </button>
-                `).join("")}
-            </div>
-        </div>
-    `;
-}
-
-function rendrePoints() {
-    if (!_predicationCourante.points || _predicationCourante.points.length === 0) {
-        return `<p style="font-size:14px;color:var(--texte-secondaire);font-style:italic;">Les points apparaîtront ici après la génération, ou ajoutez-en manuellement.</p>`;
+        `;
+    } else {
+        zone.innerHTML = `
+            <button type="button" class="btn btn-secondaire" id="bouton-sauvegarder-presenter" data-testid="bouton-sauvegarder-et-presenter">
+                ${MS.icone("lecture", "icone-petit")} Enregistrer & prêcher
+            </button>
+        `;
     }
-    return _predicationCourante.points.map((pt, idx) => `
-        <div class="point-bloc" data-testid="point-${idx}">
-            <div class="point-bloc-entete">
-                <span class="point-bloc-numero">Point ${idx + 1}</span>
-                <button type="button" class="btn-icone" style="width:28px;height:28px;" data-action="supprimer-point" data-index="${idx}" aria-label="Supprimer ce point" data-testid="supprimer-point-${idx}">
-                    ${MS.icone("poubelle", "icone-petit")}
-                </button>
-            </div>
-            <input type="text" class="champ" value="${MS.echapperHTML(pt.titre || "")}" placeholder="Titre du point"
-                   data-role="point-titre" data-index="${idx}" data-testid="point-titre-${idx}"
-                   style="font-family:Fraunces,serif;font-size:16px;font-weight:600;margin-bottom:10px;" />
-            <textarea class="champ" rows="5" data-role="point-explication" data-index="${idx}" data-testid="point-explication-${idx}-textarea">${MS.echapperHTML(pt.explication || "")}</textarea>
-            <div class="actions-assistant">
-                ${["reformuler", "corriger", "developper", "illustrer"].map(a => `
-                    <button type="button" class="btn-assistant" data-action="assistant-point" data-index="${idx}" data-action-ia="${a}" data-testid="point-explication-${idx}-assistant-${a}">
-                        ${MS.icone("baguette", "icone-petit")} ${a.charAt(0).toUpperCase() + a.slice(1)}
-                    </button>
-                `).join("")}
-            </div>
-        </div>
-    `).join("");
 }
 
-function attacherEvenementsEditeur(enEdition) {
-    const $ = (s) => document.querySelector(s);
-
-    // Synchronisation des champs → objet en mémoire
-    ["titre", "theme", "verset_principal", "objectif", "notes", "introduction", "conclusion"].forEach((cle) => {
-        const id = cle.replace("_", "-").replace("verset-principal", "verset");
-        const el = document.getElementById("f-" + id) || document.getElementById("f-" + cle);
-        if (el) {
-            el.addEventListener("input", () => { _predicationCourante[cle] = el.value; });
-        }
-    });
-    // Corrections d'id
-    $("#f-verset").addEventListener("input", (e) => _predicationCourante.verset_principal = e.target.value);
-
-    // Points (mises à jour)
-    document.querySelectorAll("[data-role='point-titre']").forEach(el => {
-        el.addEventListener("input", () => {
-            _predicationCourante.points[Number(el.dataset.index)].titre = el.value;
-        });
-    });
-    document.querySelectorAll("[data-role='point-explication']").forEach(el => {
-        el.addEventListener("input", () => {
-            _predicationCourante.points[Number(el.dataset.index)].explication = el.value;
-        });
-    });
-
-    // Ajouter / supprimer point
-    $("#btn-ajouter-point").addEventListener("click", () => {
-        _predicationCourante.points.push({ titre: "", explication: "" });
-        document.getElementById("zone-points").innerHTML = rendrePoints();
-        attacherEvenementsPoints();
-    });
-    attacherEvenementsPoints();
-
-    // Générer prédication
-    $("#btn-generer").addEventListener("click", async () => {
-        if (!_predicationCourante.titre.trim()) {
-            MS.afficherToast("Saisissez au moins un titre pour lancer la génération.", "erreur");
-            return;
-        }
-        const btn = $("#btn-generer");
-        btn.disabled = true;
-        const htmlOrig = btn.innerHTML;
-        btn.innerHTML = `<span class="spin-petit"></span> Génération…`;
-        try {
-            const res = await MS.api.genererPredication({
-                titre: _predicationCourante.titre,
-                theme: _predicationCourante.theme,
-                verset_principal: _predicationCourante.verset_principal,
-                objectif: _predicationCourante.objectif,
-                notes: _predicationCourante.notes,
-            });
-            _predicationCourante.introduction = res.introduction;
-            _predicationCourante.points = res.points || [];
-            _predicationCourante.conclusion = res.conclusion;
-            MS.afficherToast("Prédication générée !", "succes");
-            dessinerEditeur(enEdition);
-        } catch (err) {
-            MS.afficherToast(err.message || "Échec de la génération.", "erreur");
-            btn.disabled = false;
-            btn.innerHTML = htmlOrig;
-        }
-    });
-
-    // Suggérer versets
-    $("#btn-versets").addEventListener("click", async () => {
-        if (!_predicationCourante.theme.trim()) {
-            MS.afficherToast("Indiquez un thème pour obtenir des suggestions.", "erreur");
-            return;
-        }
-        const btn = $("#btn-versets");
-        btn.disabled = true;
-        const htmlOrig = btn.innerHTML;
-        btn.innerHTML = `<span class="spin-petit"></span> Recherche…`;
-        try {
-            const versets = await MS.api.suggererVersets(_predicationCourante.theme, 6);
-            dessinerVersets(versets);
-        } catch (err) {
-            MS.afficherToast(err.message || "Échec des suggestions.", "erreur");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = htmlOrig;
-        }
-    });
-
-    // Assistant IA sur les champs simples
-    document.querySelectorAll("[data-action='assistant']").forEach(btn => {
+function attacherAssistants(cle) {
+    const zone = document.querySelector(`[data-role='assistants'][data-champ='${cle}']`);
+    if (!zone) return;
+    zone.innerHTML = ACTIONS_IA.map(a => remplirBoutonAssistant(a, cle, "assistant")).join("");
+    zone.querySelectorAll("[data-action='assistant']").forEach(btn => {
         btn.addEventListener("click", () => executerAssistantChamp(btn.dataset.cle, btn.dataset.actionIa, btn));
     });
-    document.querySelectorAll("[data-action='assistant-point']").forEach(btn => {
-        btn.addEventListener("click", () => executerAssistantPoint(Number(btn.dataset.index), btn.dataset.actionIa, btn));
+}
+
+function remplirBoutonAssistant(action, cle, typeAction) {
+    return _templateBoutonAssistant
+        .split("{{ACTION_CLIC}}").join(typeAction)
+        .split("{{CLE}}").join(cle)
+        .split("{{ACTION_IA}}").join(action.cle)
+        .split("{{LIBELLE}}").join(action.libelle)
+        .split("{{ICONE_BAGUETTE}}").join(MS.icone("baguette", "icone-petit"));
+}
+
+function dessinerPoints() {
+    const zone = document.getElementById("zone-points");
+    const points = _predicationCourante.points || [];
+
+    if (points.length === 0) {
+        zone.innerHTML = `<p style="font-size:14px;color:var(--texte-secondaire);font-style:italic;">Les points apparaîtront ici après la génération, ou ajoutez-en manuellement.</p>`;
+        return;
+    }
+
+    // Rendu des blocs de points à partir du template
+    zone.innerHTML = points.map((_, idx) => remplirPoint(idx)).join("");
+
+    // Remplissage des champs + boutons assistant par point
+    points.forEach((pt, idx) => {
+        document.querySelector(`[data-role='point-titre'][data-index='${idx}']`).value = pt.titre || "";
+        document.querySelector(`[data-role='point-explication'][data-index='${idx}']`).value = pt.explication || "";
+        const zoneAssist = document.querySelector(`[data-role='assistants-point'][data-index='${idx}']`);
+        zoneAssist.innerHTML = ACTIONS_IA.map(a => remplirBoutonAssistant(a, `point-${idx}`, "assistant-point"))
+            .join("")
+            // Insère l'index dans l'attribut data-index des boutons de point
+            .replace(/data-cle="point-\d+"/g, `data-cle="point-${idx}"`);
     });
 
-    // Sauvegarder
-    $("#btn-sauvegarder").addEventListener("click", () => sauvegarder(enEdition, false));
-    const btnPresenter = $("#btn-sauvegarder-presenter");
-    if (btnPresenter) btnPresenter.addEventListener("click", () => sauvegarder(enEdition, true));
+    attacherEvenementsPoints();
+}
+
+function remplirPoint(idx) {
+    return _templatePointBloc
+        .split("{{INDEX}}").join(idx)
+        .split("{{NUMERO}}").join(idx + 1)
+        .split("{{ICONE_POUBELLE}}").join(MS.icone("poubelle", "icone-petit"));
 }
 
 function attacherEvenementsPoints() {
@@ -267,8 +142,7 @@ function attacherEvenementsPoints() {
         btn.addEventListener("click", () => {
             const idx = Number(btn.dataset.index);
             _predicationCourante.points.splice(idx, 1);
-            document.getElementById("zone-points").innerHTML = rendrePoints();
-            attacherEvenementsPoints();
+            dessinerPoints();
         });
     });
     document.querySelectorAll("[data-role='point-titre']").forEach(el => {
@@ -282,8 +156,91 @@ function attacherEvenementsPoints() {
         });
     });
     document.querySelectorAll("[data-action='assistant-point']").forEach(btn => {
-        btn.addEventListener("click", () => executerAssistantPoint(Number(btn.dataset.index), btn.dataset.actionIa, btn));
+        btn.addEventListener("click", () => {
+            const idx = Number(btn.closest("[data-role='assistants-point']").dataset.index);
+            executerAssistantPoint(idx, btn.dataset.actionIa, btn);
+        });
     });
+}
+
+function attacherEvenementsGeneraux(enEdition) {
+    // Synchronisation champs → objet
+    document.getElementById("f-titre").addEventListener("input", e => _predicationCourante.titre = e.target.value);
+    document.getElementById("f-theme").addEventListener("input", e => _predicationCourante.theme = e.target.value);
+    document.getElementById("f-verset").addEventListener("input", e => _predicationCourante.verset_principal = e.target.value);
+    document.getElementById("f-objectif").addEventListener("input", e => _predicationCourante.objectif = e.target.value);
+    document.getElementById("f-notes").addEventListener("input", e => _predicationCourante.notes = e.target.value);
+    document.getElementById("f-introduction").addEventListener("input", e => _predicationCourante.introduction = e.target.value);
+    document.getElementById("f-conclusion").addEventListener("input", e => _predicationCourante.conclusion = e.target.value);
+
+    // Ajouter un point
+    document.getElementById("bouton-ajouter-point").addEventListener("click", () => {
+        _predicationCourante.points.push({ titre: "", explication: "" });
+        dessinerPoints();
+    });
+
+    // Générer la prédication (appel IA)
+    document.getElementById("bouton-generer").addEventListener("click", () => genererPredicationIA(enEdition));
+
+    // Suggérer des versets
+    document.getElementById("bouton-versets").addEventListener("click", suggererVersetsIA);
+
+    // Sauvegarder
+    document.getElementById("bouton-sauvegarder").addEventListener("click", () => sauvegarder(enEdition, false));
+    const btnPresenter = document.getElementById("bouton-sauvegarder-presenter");
+    if (btnPresenter) btnPresenter.addEventListener("click", () => sauvegarder(enEdition, true));
+}
+
+async function genererPredicationIA(enEdition) {
+    if (!_predicationCourante.titre.trim()) {
+        MS.afficherToast("Saisissez au moins un titre pour lancer la génération.", "erreur");
+        return;
+    }
+    const btn = document.getElementById("bouton-generer");
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spin-petit"></span> Génération…`;
+    try {
+        const res = await MS.api.genererPredication({
+            titre: _predicationCourante.titre,
+            theme: _predicationCourante.theme,
+            verset_principal: _predicationCourante.verset_principal,
+            objectif: _predicationCourante.objectif,
+            notes: _predicationCourante.notes,
+        });
+        _predicationCourante.introduction = res.introduction;
+        _predicationCourante.points = res.points || [];
+        _predicationCourante.conclusion = res.conclusion;
+        document.getElementById("f-introduction").value = res.introduction;
+        document.getElementById("f-conclusion").value = res.conclusion;
+        dessinerPoints();
+        MS.afficherToast("Prédication générée !", "succes");
+    } catch (err) {
+        MS.afficherToast(err.message || "Échec de la génération.", "erreur");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+    }
+}
+
+async function suggererVersetsIA() {
+    if (!_predicationCourante.theme.trim()) {
+        MS.afficherToast("Indiquez un thème pour obtenir des suggestions.", "erreur");
+        return;
+    }
+    const btn = document.getElementById("bouton-versets");
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spin-petit"></span> Recherche…`;
+    try {
+        const versets = await MS.api.suggererVersets(_predicationCourante.theme, 6);
+        dessinerVersets(versets);
+    } catch (err) {
+        MS.afficherToast(err.message || "Échec des suggestions.", "erreur");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+    }
 }
 
 function dessinerVersets(versets) {
@@ -292,22 +249,20 @@ function dessinerVersets(versets) {
         zone.innerHTML = `<p style="margin-top:16px;color:var(--texte-secondaire);font-size:14px;">Aucun verset trouvé.</p>`;
         return;
     }
+    const items = versets.map((v, idx) => _templateVersetItem
+        .split("{{INDEX}}").join(idx)
+        .split("{{REFERENCE}}").join(MS.echapperHTML(v.reference))
+        .split("{{TEXTE}}").join(MS.echapperHTML(v.texte))
+        .split("{{ICONE_PLUS_PETIT}}").join(MS.icone("plus", "icone-petit"))
+    ).join("");
+
     zone.innerHTML = `
         <div class="liste-versets" data-testid="liste-versets-suggerees">
             <p class="liste-versets-titre">Versets suggérés — cliquez pour ajouter aux notes</p>
-            ${versets.map((v, idx) => `
-                <div class="verset-item">
-                    <div style="min-width:0;">
-                        <p class="verset-ref">${MS.echapperHTML(v.reference)}</p>
-                        <p class="verset-texte">${MS.echapperHTML(v.texte)}</p>
-                    </div>
-                    <button type="button" class="btn-icone" style="width:32px;height:32px;" data-action="ajouter-verset" data-idx="${idx}" aria-label="Ajouter ce verset" data-testid="ajouter-verset-${idx}">
-                        ${MS.icone("plus", "icone-petit")}
-                    </button>
-                </div>
-            `).join("")}
+            ${items}
         </div>
     `;
+
     zone.querySelectorAll("[data-action='ajouter-verset']").forEach(btn => {
         btn.addEventListener("click", () => {
             const v = versets[Number(btn.dataset.idx)];
@@ -330,8 +285,8 @@ async function executerAssistantChamp(cle, action, bouton) {
         MS.afficherToast("Écrivez du texte avant d'utiliser l'assistant.", "erreur");
         return;
     }
-    const boutonsAssistant = document.querySelectorAll(".btn-assistant");
-    boutonsAssistant.forEach(b => b.disabled = true);
+    const tousBtns = document.querySelectorAll(".btn-assistant");
+    tousBtns.forEach(b => b.disabled = true);
     const original = bouton.innerHTML;
     bouton.innerHTML = `<span class="spin-petit"></span>`;
     try {
@@ -344,7 +299,7 @@ async function executerAssistantChamp(cle, action, bouton) {
     } catch (err) {
         MS.afficherToast(err.message || "Assistant indisponible.", "erreur");
     } finally {
-        boutonsAssistant.forEach(b => b.disabled = false);
+        tousBtns.forEach(b => b.disabled = false);
         bouton.innerHTML = original;
     }
 }
@@ -356,20 +311,19 @@ async function executerAssistantPoint(idx, action, bouton) {
         MS.afficherToast("Écrivez du texte avant d'utiliser l'assistant.", "erreur");
         return;
     }
-    const boutonsAssistant = document.querySelectorAll(".btn-assistant");
-    boutonsAssistant.forEach(b => b.disabled = true);
+    const tousBtns = document.querySelectorAll(".btn-assistant");
+    tousBtns.forEach(b => b.disabled = true);
     const original = bouton.innerHTML;
     bouton.innerHTML = `<span class="spin-petit"></span>`;
     try {
         const res = await MS.api.assistantIA(action, texte, _predicationCourante.titre);
         _predicationCourante.points[idx].explication = res;
-        const textarea = document.querySelector(`[data-role='point-explication'][data-index='${idx}']`);
-        if (textarea) textarea.value = res;
+        document.querySelector(`[data-role='point-explication'][data-index='${idx}']`).value = res;
         MS.afficherToast("Point mis à jour par l'assistant.", "succes");
     } catch (err) {
         MS.afficherToast(err.message || "Assistant indisponible.", "erreur");
     } finally {
-        boutonsAssistant.forEach(b => b.disabled = false);
+        tousBtns.forEach(b => b.disabled = false);
         bouton.innerHTML = original;
     }
 }
@@ -381,7 +335,7 @@ async function sauvegarder(enEdition, presenterApres) {
         return;
     }
     _enregistrementEnCours = true;
-    const btn = document.getElementById("btn-sauvegarder");
+    const btn = document.getElementById("bouton-sauvegarder");
     const original = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = `<span class="spin-petit"></span> Enregistrement…`;

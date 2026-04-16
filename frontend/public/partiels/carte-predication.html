@@ -1,0 +1,36 @@
+<!-- ============================================================================
+     partiels/carte-predication.html — Une carte de prédication dans la liste
+     ============================================================================ -->
+<article class="carte carte-predication" data-testid="carte-predication-{{ID}}">
+    <div class="carte-entete">
+        <div class="carte-date">{{ICONE_CALENDRIER}} {{DATE}}</div>
+        <span class="carte-theme" data-role="theme" style="{{STYLE_THEME}}">{{THEME}}</span>
+    </div>
+
+    <a href="#/predication/{{ID_ENCODE}}" style="display:block;"
+       data-testid="lien-predication-{{ID}}">
+        <h3 class="carte-titre">{{TITRE}}</h3>
+        <p class="carte-verset" data-role="verset" style="{{STYLE_VERSET}}">{{VERSET}}</p>
+        <p class="carte-resume" data-role="resume" style="{{STYLE_RESUME}}">{{RESUME}}</p>
+    </a>
+
+    <div class="carte-actions">
+        <div class="carte-actions-gauche">
+            <a href="#/predication/{{ID_ENCODE}}" class="carte-action-lien"
+               data-testid="action-editer-{{ID}}">
+                {{ICONE_FICHIER}} Modifier
+            </a>
+            <a href="#/mode-predication/{{ID_ENCODE}}" class="carte-action-lien carte-action-ambre"
+               style="color:var(--accent);"
+               data-testid="action-presenter-{{ID}}">
+                {{ICONE_LECTURE}} Prêcher
+            </a>
+        </div>
+        <button type="button" class="btn-icone" style="width:32px;height:32px;"
+                data-action="supprimer" data-id="{{ID}}"
+                aria-label="Supprimer cette prédication"
+                data-testid="action-supprimer-{{ID}}">
+            {{ICONE_POUBELLE}}
+        </button>
+    </div>
+</article>
