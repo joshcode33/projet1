@@ -1,52 +1,94 @@
-import { useEffect } from "react";
+// ============================================================================
+// Point d'entrée de l'application MySermon AI
+// ============================================================================
+
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { Toaster } from "sonner";
+import { FournisseurAuth } from "@/contextes/ContexteAuth";
+import { FournisseurTheme, useTheme } from "@/contextes/ContexteTheme";
+import RouteProtegee from "@/composants/RouteProtegee";
+import PageAccueil from "@/pages/PageAccueil";
+import Connexion from "@/pages/Connexion";
+import Inscription from "@/pages/Inscription";
+import TableauDeBord from "@/pages/TableauDeBord";
+import CreerPredication from "@/pages/CreerPredication";
+import VoirPredication from "@/pages/VoirPredication";
+import ModePredication from "@/pages/ModePredication";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+function NotificationsGlobales() {
+  const { theme } = useTheme();
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
+    <Toaster
+      position="top-right"
+      richColors
+      closeButton
+      theme={theme}
+      toastOptions={{
+        style: {
+          fontFamily: "Manrope, sans-serif",
+        },
+      }}
+    />
   );
-};
+}
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <FournisseurTheme>
+        <BrowserRouter>
+          <FournisseurAuth>
+            <NotificationsGlobales />
+            <Routes>
+              <Route path="/" element={<PageAccueil />} />
+              <Route path="/connexion" element={<Connexion />} />
+              <Route path="/inscription" element={<Inscription />} />
+              <Route
+                path="/tableau-de-bord"
+                element={
+                  <RouteProtegee>
+                    <TableauDeBord />
+                  </RouteProtegee>
+                }
+              />
+              <Route
+                path="/creer-predication"
+                element={
+                  <RouteProtegee>
+                    <CreerPredication />
+                  </RouteProtegee>
+                }
+              />
+              <Route
+                path="/creer-predication/:id"
+                element={
+                  <RouteProtegee>
+                    <CreerPredication />
+                  </RouteProtegee>
+                }
+              />
+              <Route
+                path="/predication/:id"
+                element={
+                  <RouteProtegee>
+                    <VoirPredication />
+                  </RouteProtegee>
+                }
+              />
+              <Route
+                path="/mode-predication/:id"
+                element={
+                  <RouteProtegee>
+                    <ModePredication />
+                  </RouteProtegee>
+                }
+              />
+              <Route path="*" element={<PageAccueil />} />
+            </Routes>
+          </FournisseurAuth>
+        </BrowserRouter>
+      </FournisseurTheme>
     </div>
   );
 }
