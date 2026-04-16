@@ -1,11 +1,4 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "@/index.css";
-import App from "@/App";
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+// Fichier vide — l'application réelle est servie en HTML/CSS/JS vanilla
+// depuis /app/frontend/public/. Ce module est conservé uniquement pour
+// que la build craco/webpack ne se plaigne pas.
+console.log("[MySermon AI] bundle React neutre chargé (app vanilla dans public/).");
