@@ -1,7 +1,0 @@
-/* Styles racine de l'application MySermon AI */
-.App {
-  min-height: 100vh;
-  width: 100%;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
