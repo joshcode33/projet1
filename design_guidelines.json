@@ -1,0 +1,96 @@
+{
+  "project_name": "MySermon AI",
+  "theme": "Light/Dark Toggle",
+  "archetype": "Archetype 1: Organic & Earthy",
+  "design_philosophy": "A serene, reverent, and modern productivity tool for pastors. It avoids religious clichés (no crosses, garish gold, or stained glass) and instead focuses on a warm, earthy, and trustworthy environment. The interface must be minimal, providing a calm space for writing and a highly optimized, distraction-free 'Preaching Mode' with massive text.",
+  "colors": {
+    "light": {
+      "background": "#FDFBF7",
+      "surface": "#FFFFFF",
+      "border": "#E8E3DD",
+      "text_primary": "#2D2A26",
+      "text_secondary": "#6E6862",
+      "primary": "#4A5D23",
+      "primary_hover": "#3C4C1C",
+      "accent": "#C5832B",
+      "danger": "#B33A3A",
+      "success": "#2D6A4F"
+    },
+    "dark": {
+      "background": "#1C1B1A",
+      "surface": "#272523",
+      "border": "#3A3632",
+      "text_primary": "#F4F0EB",
+      "text_secondary": "#A39E98",
+      "primary": "#7A8C53",
+      "primary_hover": "#8C9D6B",
+      "accent": "#D99B4B",
+      "danger": "#CF5C5C",
+      "success": "#4CAF50"
+    },
+    "preaching_mode": {
+      "background": "#141312",
+      "text": "#FFFFFF",
+      "accent": "#D99B4B"
+    }
+  },
+  "typography": {
+    "font_families": {
+      "heading": "Fraunces, serif",
+      "body": "Manrope, sans-serif"
+    },
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight font-heading",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight font-heading",
+      "h3": "text-xl sm:text-2xl font-heading",
+      "body": "text-base leading-relaxed font-body",
+      "small": "text-sm tracking-wide font-body",
+      "preaching_text": "text-[48px] md:text-[64px] lg:text-[72px] leading-snug font-body font-medium"
+    },
+    "guidelines": "Use Fraunces for all headings to give an editorial, classic, and trustworthy feel. Use Manrope for all body text, UI elements, and the Preaching Mode text for maximum legibility. Never use Inter or Space Grotesk."
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing. Use p-8 or p-12 for main content areas to create a calm, uncrowded writing environment.",
+    "container_rules": "Max-width for the writing editor should be restricted (e.g., max-w-3xl) to ensure optimal reading length. Preaching mode should use max-w-5xl with generous side padding.",
+    "grids": "Use simple 1-column layouts for the editor, and a bento-style or simple 3-column grid for the dashboard sermon list."
+  },
+  "components": {
+    "buttons": "Flat solid background, sharp or very slightly rounded corners (rounded-md). Subtle hover states (darken background, slight lift). Do not use heavy drop shadows.",
+    "cards": "Solid background matching the surface color, 1px subtle border (border-black/5 in light mode, border-white/10 in dark mode). No soft shadows (neumorphism is banned).",
+    "inputs": "Clean, highly visible focus states. Use Shadcn UI but customize borders to be subtle and focus rings to use the primary color (Olive Green).",
+    "preaching_mode": "Must hide all sidebars and nav. Only display the text, a floating subtle action bar (for font size, dark/light, exit), and auto-scroll controls."
+  },
+  "motion_and_interaction": {
+    "hover_states": "All interactive elements must explicitly change color or background on hover.",
+    "transitions": "Use 'transition: all 0.2s ease-in-out' for buttons and cards.",
+    "preaching_mode_scroll": "Smooth, continuous auto-scroll based on user-defined speed setting. Must be easily pausable."
+  },
+  "media": {
+    "guidelines": "Use photography that evokes calm, warmth, and focus. Avoid explicit religious symbols; lean towards minimal workspaces, warm lighting, and nature.",
+    "image_urls": {
+      "auth_background": {
+        "url": "https://images.unsplash.com/photo-1760442903566-99f3eae250ad?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxzdWJ0bGUlMjBhYnN0cmFjdCUyMHdhcm0lMjB0ZXh0dXJlJTIwbmV1dHJhbHxlbnwwfHx8fDE3NzYzNzUwMDJ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract blurred warm colors with soft light bokeh, perfect for the login screen background.",
+        "category": "background"
+      },
+      "empty_state": {
+        "url": "https://images.unsplash.com/photo-1765371512707-9e0e96fd9e5b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODF8MHwxfHNlYXJjaHwzfHxtaW5pbWFsaXN0JTIwY2FsbSUyMHdvcmtzcGFjZSUyMHdhcm0lMjBsaWdodGluZ3xlbnwwfHx8fDE3NzYzNzUwMDF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Modern room with wood paneling, to be used for dashboard empty states or onboarding.",
+        "category": "illustration"
+      }
+    }
+  },
+  "accessibility": {
+    "contrast": "Ensure text meets APCA standards. Preaching mode must have extreme contrast and high legibility.",
+    "testing": "All interactive elements MUST include a 'data-testid' attribute (e.g., data-testid='sermon-generate-button')."
+  },
+  "instructions_to_main_agent": [
+    "Initialize Tailwind config with the specified color palette and font families (Fraunces and Manrope).",
+    "Install required font families via Google Fonts.",
+    "Build the dashboard using pure HTML/Tailwind for structural layout and Shadcn for interactive components (dropdowns, dialogs, etc.).",
+    "The Preaching Mode is critical: ensure the text size is massive (text-[48px] to text-[72px]), the background is dark (#141312), and implement a smooth JS-based auto-scroll feature.",
+    "All UI copy must be in French.",
+    "Ensure the app is fully responsive, particularly the preaching mode and sermon creation form.",
+    "Use the provided image URLs for auth backgrounds and empty states. Do not use generic placeholders."
+  ]
+}
