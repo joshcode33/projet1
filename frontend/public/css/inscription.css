@@ -1,0 +1,17 @@
+/* ============================================================================
+   inscription.css — Styles exclusifs de la page inscription.html
+   ----------------------------------------------------------------------------
+   Les classes de layout partagées (.page-auth, .auth-*) sont définies dans
+   connexion.css — ce fichier ne contient QUE ce qui est spécifique à
+   l'inscription : l'ordre inversé des colonnes et l'écran de confirmation
+   e-mail.
+   ============================================================================ */
+
+/* Variante de .page-auth utilisée sur inscription.html :
+   formulaire à gauche, image à droite (inverse de connexion). */
+@media (min-width: 1024px) {
+    .page-auth.inversee { grid-template-columns: 1fr 1.1fr; }
+}
+
+/* Aucune autre règle n'est nécessaire pour la page d'inscription — elle
+   réutilise la quasi-totalité des styles auth définis dans connexion.css. */

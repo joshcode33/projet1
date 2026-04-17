@@ -1,0 +1,69 @@
+/* ============================================================================
+   connexion.css — Styles exclusifs de la page connexion.html
+   ============================================================================ */
+
+.page-auth {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+    .page-auth { grid-template-columns: 1.1fr 1fr; }
+}
+
+.auth-cote-image {
+    display: none;
+    position: relative;
+    background-size: cover; background-position: center;
+}
+@media (min-width: 1024px) { .auth-cote-image { display: block; } }
+
+.auth-cote-image::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top right, rgba(28, 27, 26, 0.6), rgba(28, 27, 26, 0.15), transparent);
+}
+.auth-cote-image-contenu {
+    position: relative; z-index: 1;
+    padding: 48px; color: white;
+    height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+}
+.auth-cote-image-titre {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 42px; line-height: 1.1; letter-spacing: -0.01em;
+    max-width: 480px;
+}
+.auth-cote-image-sous-titre {
+    margin-top: 20px; font-size: 16px; line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85); max-width: 480px;
+}
+
+.auth-cote-formulaire {
+    display: flex; align-items: center; justify-content: center;
+    padding: 48px 24px; position: relative;
+}
+.auth-formulaire-conteneur {
+    width: 100%; max-width: 440px;
+    animation: apparaitre 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.auth-titre { font-size: 36px; margin-top: 0; }
+@media (min-width: 640px) { .auth-titre { font-size: 42px; } }
+.auth-description {
+    margin-top: 8px; color: var(--texte-secondaire); font-size: 14px;
+}
+
+.auth-bouton-theme {
+    position: absolute; top: 20px; right: 20px;
+}
+.auth-formulaire {
+    margin-top: 32px; display: flex; flex-direction: column; gap: 16px;
+}
+.auth-pied {
+    margin-top: 24px; text-align: center; font-size: 14px; color: var(--texte-secondaire);
+}
+.auth-pied a { color: var(--primaire); font-weight: 500; }
+.auth-pied a:hover { text-decoration: underline; }
+
+.auth-logo-mobile {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 32px;
+}
+@media (min-width: 1024px) { .auth-logo-mobile { display: none; } }

@@ -1,0 +1,36 @@
+/* ============================================================================
+   en-tete.css — Styles du bandeau supérieur (partiels en-tete-*.html)
+   ============================================================================ */
+
+.en-tete {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(253, 251, 247, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--bordure);
+}
+body.theme-sombre .en-tete { background: rgba(28, 27, 26, 0.88); }
+
+.en-tete-conteneur {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 20px;
+}
+
+.logo {
+    display: flex; align-items: center; gap: 10px;
+    transition: opacity var(--transition);
+}
+.logo:hover { opacity: 0.8; }
+.logo-icone {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: var(--rayon);
+    background: var(--primaire); color: #FDFBF7;
+}
+.logo-texte {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    font-size: 18px; letter-spacing: -0.01em;
+}
+.logo-ai { color: var(--accent); }
+
+.en-tete-actions { display: flex; align-items: center; gap: 8px; }

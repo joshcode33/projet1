@@ -1,0 +1,67 @@
+/* ============================================================================
+   voir-predication.css — Styles exclusifs de la page voir-predication.html
+   ============================================================================ */
+
+.vue-predication {
+    max-width: 720px; margin: 0 auto; padding: 32px 20px 80px;
+}
+@media (min-width: 768px) {
+    .vue-predication { padding: 48px 32px 80px; }
+}
+
+.vue-theme {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent);
+}
+.vue-titre {
+    margin-top: 8px; font-size: 40px; letter-spacing: -0.02em;
+}
+@media (min-width: 768px) { .vue-titre { font-size: 52px; } }
+
+.vue-verset {
+    margin-top: 16px;
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 22px; color: var(--texte-secondaire);
+}
+.vue-objectif {
+    margin-top: 12px; font-size: 14px; color: var(--texte-secondaire);
+}
+
+/* Barre d'actions (modifier, prêcher, PDF, Word, WhatsApp, email, copier) */
+.vue-barre-actions {
+    margin: 32px 0;
+    padding: 20px 0;
+    border-top: 1px solid var(--bordure);
+    border-bottom: 1px solid var(--bordure);
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.vue-barre-droite {
+    margin-left: auto;
+    display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+/* Sections (introduction / points / conclusion) */
+.vue-section { margin-top: 40px; }
+.vue-section-titre {
+    font-size: 28px; letter-spacing: -0.01em;
+}
+@media (min-width: 768px) { .vue-section-titre { font-size: 32px; } }
+.vue-section-contenu {
+    margin-top: 16px; font-size: 16px; line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+/* Bloc des notes personnelles en bas de page */
+.vue-notes {
+    margin-top: 48px; padding: 24px;
+    background: var(--fond);
+    border: 1px dashed var(--bordure);
+    border-radius: var(--rayon);
+}
+.vue-notes-titre {
+    font-size: 15px; color: var(--texte-secondaire);
+}
+.vue-notes-contenu {
+    margin-top: 8px; font-size: 14px;
+    color: var(--texte-secondaire); white-space: pre-wrap;
+}

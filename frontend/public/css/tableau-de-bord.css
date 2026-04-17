@@ -1,0 +1,128 @@
+/* ============================================================================
+   tableau-de-bord.css — Styles exclusifs de la page tableau-de-bord.html
+   ============================================================================ */
+
+.bandeau-accueil {
+    display: flex; flex-direction: column; gap: 12px;
+    animation: apparaitre 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (min-width: 768px) {
+    .bandeau-accueil {
+        flex-direction: row; align-items: flex-end; justify-content: space-between;
+    }
+}
+
+.barre-outils {
+    margin-top: 32px; display: flex; flex-direction: column; gap: 12px;
+}
+@media (min-width: 640px) {
+    .barre-outils { flex-direction: row; align-items: center; }
+}
+
+.champ-recherche-conteneur {
+    position: relative; flex: 1;
+}
+.champ-recherche-conteneur svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--texte-secondaire); pointer-events: none;
+}
+.champ-recherche-conteneur .champ { padding-left: 38px; }
+
+/* Grille des cartes de prédications */
+.grille-predications {
+    margin-top: 32px;
+    display: grid; gap: 16px;
+    grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+    .grille-predications { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+    .grille-predications { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Carte d'aperçu d'une prédication (partiels/carte-predication.html) */
+.carte-predication {
+    display: flex; flex-direction: column; gap: 12px;
+    animation: apparaitre 0.5s ease-out;
+}
+.carte-predication:hover {
+    border-color: rgba(74, 93, 35, 0.4);
+    transform: translateY(-2px);
+}
+body.theme-sombre .carte-predication:hover {
+    border-color: rgba(122, 140, 83, 0.5);
+}
+
+.carte-entete {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+}
+.carte-date {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--texte-secondaire);
+}
+.carte-theme {
+    display: inline-flex; padding: 3px 10px;
+    border-radius: 999px; font-size: 11px; font-weight: 500;
+    background: var(--fond); border: 1px solid var(--bordure);
+}
+.carte-titre {
+    font-size: 20px; line-height: 1.2;
+    transition: color var(--transition);
+}
+.carte-predication:hover .carte-titre { color: var(--primaire); }
+
+.carte-verset {
+    margin-top: 4px; font-style: italic; font-size: 14px; color: var(--accent);
+}
+.carte-resume {
+    margin-top: 12px;
+    font-size: 14px; color: var(--texte-secondaire);
+    display: -webkit-box; -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; overflow: hidden;
+}
+.carte-actions {
+    margin-top: auto; display: flex; justify-content: space-between; align-items: center;
+    padding-top: 12px;
+}
+.carte-actions-gauche { display: flex; gap: 12px; }
+.carte-action-lien {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 500;
+    transition: color var(--transition);
+}
+.carte-action-lien:hover       { color: var(--primaire); }
+.carte-action-ambre:hover      { color: var(--accent); }
+
+/* État vide (partiels/etat-vide.html) */
+.etat-vide {
+    padding: 64px 24px; text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+}
+.etat-vide-icone {
+    display: flex; align-items: center; justify-content: center;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(74, 93, 35, 0.1); color: var(--primaire);
+    margin-bottom: 20px;
+}
+.etat-vide-titre { font-size: 28px; }
+.etat-vide-texte {
+    margin-top: 8px; max-width: 460px;
+    color: var(--texte-secondaire); font-size: 14px;
+}
+
+/* Message d'erreur (quand la table Supabase n'existe pas, etc.) */
+.message-erreur {
+    background: rgba(179, 58, 58, 0.08);
+    border: 1px solid rgba(179, 58, 58, 0.3);
+    color: var(--danger);
+    padding: 18px 20px; border-radius: var(--rayon);
+}
+.message-erreur-titre { font-weight: 600; margin-bottom: 6px; }
+.message-erreur-detail {
+    font-size: 13px; color: var(--texte-secondaire); margin-top: 10px;
+}
+.message-erreur-detail code {
+    background: var(--fond); padding: 2px 6px; border-radius: 4px;
+    font-family: ui-monospace, monospace; font-size: 12px;
+}

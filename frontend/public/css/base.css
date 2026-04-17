@@ -1,0 +1,227 @@
+/* ============================================================================
+   base.css — Variables de thème + éléments fondamentaux partagés
+   ----------------------------------------------------------------------------
+   Contient : variables CSS, reset, typographie, boutons, champs de formulaire,
+   toasts, spinners, icônes, utilitaires. Aucun style spécifique à une page.
+   ============================================================================ */
+
+/* ------------------------------ Variables ------------------------------ */
+:root {
+    --fond: #FDFBF7;
+    --surface: #FFFFFF;
+    --bordure: #E8E3DD;
+    --texte-primaire: #2D2A26;
+    --texte-secondaire: #6E6862;
+    --primaire: #4A5D23;
+    --primaire-survol: #3C4C1C;
+    --accent: #C5832B;
+    --accent-survol: #A96E21;
+    --danger: #B33A3A;
+    --succes: #2D6A4F;
+    --rayon: 8px;
+    --transition: 0.2s ease-in-out;
+}
+
+body.theme-sombre {
+    --fond: #1C1B1A;
+    --surface: #272523;
+    --bordure: #3A3632;
+    --texte-primaire: #F4F0EB;
+    --texte-secondaire: #A39E98;
+    --primaire: #7A8C53;
+    --primaire-survol: #8C9D6B;
+    --accent: #D99B4B;
+    --accent-survol: #C5832B;
+    --danger: #CF5C5C;
+    --succes: #4CAF50;
+}
+
+/* ------------------------------ Reset & base --------------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    color: var(--texte-primaire);
+    background-color: var(--fond);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+    transition: background-color var(--transition), color var(--transition);
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea, select { font: inherit; color: inherit; }
+
+::selection { background: rgba(197, 131, 43, 0.3); color: var(--texte-primaire); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bordure); border-radius: 999px; }
+
+.contenu-principal { min-height: calc(100vh - 72px); }
+
+/* ------------------------------ Boutons -------------------------------- */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--rayon);
+    font-weight: 500; font-size: 14px;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primaire  { background: var(--primaire); color: #FDFBF7; }
+.btn-primaire:hover:not(:disabled) { background: var(--primaire-survol); transform: translateY(-1px); }
+.btn-ambre     { background: var(--accent); color: #1C1B1A; }
+.btn-ambre:hover:not(:disabled) { background: var(--accent-survol); transform: translateY(-1px); }
+.btn-secondaire {
+    background: var(--surface); color: var(--texte-primaire);
+    border: 1px solid var(--bordure);
+}
+.btn-secondaire:hover:not(:disabled) { background: var(--bordure); }
+.btn-petit { padding: 6px 12px; font-size: 13px; }
+
+.btn-icone {
+    width: 40px; height: 40px; padding: 0;
+    border-radius: var(--rayon);
+    background: var(--surface); border: 1px solid var(--bordure);
+    color: var(--texte-primaire);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+}
+.btn-icone:hover:not(:disabled) { background: var(--bordure); }
+.btn-icone-danger:hover:not(:disabled) {
+    background: var(--danger); color: #FDFBF7; border-color: var(--danger);
+}
+
+/* ------------------------------ Champs --------------------------------- */
+.champ {
+    width: 100%; padding: 11px 14px;
+    background: var(--fond); color: var(--texte-primaire);
+    border: 1px solid var(--bordure); border-radius: var(--rayon);
+    font-size: 14px;
+    transition: all var(--transition);
+}
+.champ:focus {
+    outline: none;
+    border-color: var(--primaire);
+    box-shadow: 0 0 0 3px rgba(74, 93, 35, 0.15);
+}
+body.theme-sombre .champ:focus { box-shadow: 0 0 0 3px rgba(122, 140, 83, 0.25); }
+.champ::placeholder { color: var(--texte-secondaire); }
+textarea.champ { min-height: 110px; resize: vertical; line-height: 1.55; }
+.etiquette {
+    display: block; margin-bottom: 6px;
+    font-size: 14px; font-weight: 500;
+    color: var(--texte-primaire);
+}
+
+/* ------------------------------ Carte générique ------------------------ */
+.carte {
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all var(--transition);
+}
+
+/* ------------------------------ Titres de page partagés ---------------- */
+.page-conteneur {
+    max-width: 1100px; margin: 0 auto; padding: 40px 20px 60px;
+}
+@media (min-width: 768px) { .page-conteneur { padding: 56px 32px; } }
+
+.etiquette-section {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent);
+}
+.titre-principal { font-size: 40px; margin-top: 10px; }
+@media (min-width: 768px) { .titre-principal { font-size: 52px; } }
+.sous-titre {
+    margin-top: 8px; color: var(--texte-secondaire);
+    max-width: 600px; font-size: 16px;
+}
+.lien-retour {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; color: var(--texte-secondaire);
+    transition: color var(--transition);
+}
+.lien-retour:hover { color: var(--texte-primaire); }
+
+/* ------------------------------ Toasts --------------------------------- */
+.zone-toasts {
+    position: fixed; top: 20px; right: 20px; z-index: 100;
+    display: flex; flex-direction: column; gap: 10px;
+    max-width: 380px;
+}
+.toast {
+    padding: 14px 18px;
+    border-radius: var(--rayon);
+    background: var(--surface); color: var(--texte-primaire);
+    border: 1px solid var(--bordure);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+    animation: toast-entre 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex; align-items: flex-start; gap: 10px;
+}
+.toast-succes { border-left: 3px solid var(--succes); }
+.toast-erreur { border-left: 3px solid var(--danger); }
+.toast-info   { border-left: 3px solid var(--accent); }
+.toast-sort   { animation: toast-sort 0.3s ease forwards; }
+
+/* ------------------------------ Chargement ----------------------------- */
+.ecran-chargement {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--texte-secondaire);
+}
+.spin {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid var(--bordure); border-top-color: var(--primaire);
+    animation: spin 0.9s linear infinite;
+}
+.spin-petit {
+    width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    display: inline-block; vertical-align: middle;
+}
+
+/* ------------------------------ Icônes --------------------------------- */
+.icone       { width: 18px; height: 18px; flex-shrink: 0; }
+.icone-petit { width: 14px; height: 14px; }
+.icone-gros  { width: 24px; height: 24px; }
+
+/* ------------------------------ Utilitaires ---------------------------- */
+.grain { position: relative; }
+.grain::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    opacity: 0.035; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.cache-mobile { display: none; }
+@media (min-width: 640px) { .cache-mobile { display: inline-flex; } }
+
+.apparaitre { animation: apparaitre 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* ------------------------------ Animations ----------------------------- */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes apparaitre {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-entre {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toast-sort {
+    to { opacity: 0; transform: translateX(40px); }
+}

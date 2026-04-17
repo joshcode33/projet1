@@ -1,0 +1,118 @@
+/* ============================================================================
+   mode-predication.css — Styles exclusifs du mode plein écran mode-predication.html
+   ----------------------------------------------------------------------------
+   Mode distinct du reste de l'application : fond très sombre, typographie
+   massive, interface réduite au strict minimum pour la prédication.
+   ============================================================================ */
+
+.mode-predication {
+    position: fixed; inset: 0;
+    background: #141312; color: white;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+}
+
+/* Barre supérieure (bouton quitter + aide clavier) */
+.mode-barre-sup {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.mode-bouton-quitter-haut {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255, 255, 255, 0.7); font-size: 14px;
+    transition: color 0.2s ease-in-out;
+}
+.mode-bouton-quitter-haut:hover { color: white; }
+.mode-aide-clavier {
+    display: none; font-size: 11px; color: rgba(255, 255, 255, 0.4);
+}
+@media (min-width: 768px) { .mode-aide-clavier { display: block; } }
+
+/* Zone de texte défilante */
+.mode-contenu {
+    flex: 1; overflow-y: auto; scroll-behavior: smooth;
+}
+.mode-contenu-inner {
+    max-width: 1000px; margin: 0 auto;
+    padding: 64px 24px;
+}
+@media (min-width: 768px) {
+    .mode-contenu-inner { padding: 96px 48px; }
+}
+
+.mode-theme {
+    font-family: 'Manrope', sans-serif;
+    text-transform: uppercase; letter-spacing: 0.3em;
+    color: #D99B4B;
+}
+.mode-titre {
+    margin-top: 12px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600; letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+.mode-verset {
+    margin-top: 24px;
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Bloc (partiels/mode-bloc.html) */
+.mode-bloc { margin-top: 64px; }
+.mode-bloc-titre {
+    font-family: 'Fraunces', serif; font-weight: 600;
+    color: #D99B4B; letter-spacing: -0.01em;
+}
+.mode-bloc-contenu {
+    margin-top: 24px; white-space: pre-wrap;
+    font-family: 'Manrope', sans-serif; font-weight: 500;
+}
+.mode-espace-bas { height: 40vh; }
+
+/* Barre flottante de contrôles en bas d'écran */
+.mode-controles {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 4px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.mode-ctrl {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease-in-out;
+}
+.mode-ctrl:hover {
+    background: rgba(255, 255, 255, 0.1); color: white;
+}
+.mode-ctrl-accent {
+    background: #D99B4B; color: #141312;
+}
+.mode-ctrl-accent:hover {
+    background: #C5832B; color: #141312;
+}
+.mode-separateur {
+    width: 1px; height: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 4px;
+}
+.mode-vitesse-slider {
+    display: none; align-items: center; gap: 8px;
+    color: rgba(255, 255, 255, 0.5); font-size: 11px;
+    padding: 0 6px;
+}
+@media (min-width: 640px) {
+    .mode-vitesse-slider { display: flex; }
+}
+.mode-vitesse-slider input {
+    height: 3px; width: 90px; accent-color: #D99B4B;
+}
+.mode-taille-info {
+    font-size: 11px; color: rgba(255, 255, 255, 0.7);
+    min-width: 40px; text-align: center; font-variant-numeric: tabular-nums;
+}

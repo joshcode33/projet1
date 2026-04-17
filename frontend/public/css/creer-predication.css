@@ -1,0 +1,90 @@
+/* ============================================================================
+   creer-predication.css — Styles exclusifs de la page creer-predication.html
+   ============================================================================ */
+
+.page-editeur {
+    max-width: 800px; margin: 0 auto; padding: 32px 20px 120px;
+}
+@media (min-width: 768px) {
+    .page-editeur { padding: 48px 32px 120px; }
+}
+
+.section-formulaire { margin-top: 24px; }
+.section-titre {
+    font-size: 22px; margin-bottom: 20px;
+}
+
+.groupe-champs-deux {
+    display: grid; gap: 16px; grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+    .groupe-champs-deux { grid-template-columns: 1fr 1fr; }
+}
+
+/* Barre des actions IA (générer / suggérer versets) */
+.barre-actions-ia {
+    margin-top: 20px;
+    display: flex; flex-wrap: wrap; gap: 12px;
+}
+
+/* Liste des versets suggérés par l'IA */
+.liste-versets {
+    margin-top: 20px; padding: 16px;
+    background: var(--fond);
+    border: 1px solid var(--bordure); border-radius: var(--rayon);
+}
+.liste-versets-titre {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--texte-secondaire);
+    margin-bottom: 12px;
+}
+.verset-item {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 12px;
+    background: var(--surface); border: 1px solid var(--bordure);
+    border-radius: var(--rayon); margin-bottom: 8px;
+}
+.verset-ref  { font-weight: 600; font-size: 14px; color: var(--accent); }
+.verset-texte {
+    margin-top: 4px; font-size: 14px; color: var(--texte-secondaire); line-height: 1.5;
+}
+
+/* Bloc d'un point principal (partiels/point-bloc.html) */
+.point-bloc {
+    background: var(--fond);
+    border: 1px solid var(--bordure);
+    border-radius: var(--rayon);
+    padding: 18px;
+    margin-bottom: 16px;
+}
+.point-bloc-entete {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+}
+.point-bloc-numero {
+    font-family: 'Fraunces', serif; font-size: 14px;
+    font-weight: 600; color: var(--accent);
+}
+
+/* Boutons "Reformuler / Corriger / Développer / Illustrer" */
+.actions-assistant {
+    margin-top: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+}
+.btn-assistant {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; font-size: 12px; font-weight: 500;
+    background: var(--surface); border: 1px solid var(--bordure);
+    border-radius: var(--rayon); color: var(--texte-secondaire);
+    transition: all var(--transition);
+}
+.btn-assistant:hover:not(:disabled) {
+    border-color: var(--primaire); color: var(--primaire);
+}
+.btn-assistant:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Barre d'actions de sauvegarde en bas de page */
+.barre-actions-sauvegarde {
+    margin-top: 32px;
+    display: flex; flex-wrap: wrap; gap: 12px;
+}
